@@ -16,7 +16,7 @@ st.set_page_config(
 )
 
 # -------------------------------------------------
-# Load global styles (I-TYPE compatible)
+# Load global styles
 # -------------------------------------------------
 with open("assets/styles.css", "r", encoding="utf-8") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
@@ -25,10 +25,10 @@ with open("assets/styles.css", "r", encoding="utf-8") as f:
 # Header
 # -------------------------------------------------
 st.title("Physio Diagnostic Assistant")
-st.caption("Clinical decision support • Explainable • Bayesian-ready")
+st.caption("Clinical decision support • Explainable • Safety-aware")
 
 # -------------------------------------------------
-# Body part selection (expand later)
+# Body part selection
 # -------------------------------------------------
 body_part = st.selectbox(
     "Where is the primary pain?",
@@ -44,6 +44,18 @@ conditions = module["conditions"]
 scores, trace = initialise_scores(conditions)
 
 # -------------------------------------------------
+# Red-flag tracking
+# -------------------------------------------------
+red_flags_triggered = []
+
+RED_FLAG_ANSWERS = {
+    "Locking of the knee",
+    "Giving way or instability",
+    "Immediate swelling after injury",
+    "Night pain or pain at rest"
+}
+
+# -------------------------------------------------
 # Question loop
 # -------------------------------------------------
 for q in module["questions"]:
@@ -55,6 +67,10 @@ for q in module["questions"]:
             options=list(q["answers"].keys()),
             key=q["id"]
         )
+
+        # Track red flags
+        if answer in RED_FLAG_ANSWERS:
+            red_flags_triggered.append(answer)
 
         scores, trace = apply_answer(
             scores=scores,
@@ -72,6 +88,9 @@ for q in module["questions"]:
         )
 
         for a in answers:
+            if a in RED_FLAG_ANSWERS:
+                red_flags_triggered.append(a)
+
             scores, trace = apply_answer(
                 scores=scores,
                 trace=trace,
@@ -96,6 +115,17 @@ def confidence_band(probability: float) -> str:
     else:
         return "Low confidence"
 
+# -------------------------------------------------
+# Red-flag alert (OVERRIDE, not hide)
+# -------------------------------------------------
+if red_flags_triggered:
+    st.error(
+        "⚠️ **Potential red flags detected**\n\n"
+        "Based on your responses, some features may require **urgent or in-person assessment**.\n\n"
+        "**Red flags identified:**\n"
+        + "\n".join(f"• {rf}" for rf in set(red_flags_triggered))
+        + "\n\nThis tool does not replace professional evaluation."
+    )
 
 # -------------------------------------------------
 # Results display
@@ -110,10 +140,9 @@ sorted_results = sorted(
 for condition, probability in sorted_results:
     band = confidence_band(probability)
 
-    # Result bar
     result_bar(condition, probability)
 
-    # Confidence label
+    # Confidence indicator
     if band == "High confidence":
         st.success(band)
     elif band == "Moderate confidence":
