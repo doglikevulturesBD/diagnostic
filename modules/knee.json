@@ -2,37 +2,88 @@
   "body_part": "Knee",
 
   "conditions": {
-    "Patellar Tendinopathy": { "prior": 0.25 },
-    "Patellofemoral Pain Syndrome": { "prior": 0.30 },
-    "Meniscal Injury": { "prior": 0.20 },
-    "Quadriceps Tendinopathy": { "prior": 0.10 },
-    "Iliotibial Band Syndrome": { "prior": 0.10 },
-    "Osteoarthritis": { "prior": 0.05 }
+    "Patellar Tendinopathy": { "prior": 0.22 },
+    "Patellofemoral Pain Syndrome": { "prior": 0.26 },
+    "Meniscal Injury": { "prior": 0.16 },
+    "Quadriceps Tendinopathy": { "prior": 0.08 },
+    "Iliotibial Band Syndrome": { "prior": 0.08 },
+    "Osteoarthritis": { "prior": 0.07 },
+    "Pes Anserine Tendinopathy/Bursitis": { "prior": 0.07 },
+    "ACL Injury (screening)": { "prior": 0.06 }
   },
 
-  "questions": [
-
+  "red_flags": [
     {
-      "id": "pain_location",
+      "trigger": { "question_id": "injury_swelling_timing", "answer": "Immediate swelling within a few hours" },
+      "severity": "urgent",
+      "message": "Immediate swelling after injury can indicate significant internal injury. Consider urgent in-person assessment."
+    },
+    {
+      "trigger": { "question_id": "mechanical_symptoms", "answer": "True locking (cannot fully straighten/extend)" },
+      "severity": "urgent",
+      "message": "True locking can indicate a mechanical block within the knee. Consider urgent in-person assessment."
+    },
+    {
+      "trigger": { "question_id": "systemic_features", "answer": "Fever/unwell or hot swollen joint" },
+      "severity": "urgent",
+      "message": "Systemic symptoms with a hot/swollen joint can be concerning. Seek urgent medical assessment."
+    },
+    {
+      "trigger": { "question_id": "rest_night_pain", "answer": "Severe night pain or pain at rest" },
+      "severity": "priority",
+      "message": "Significant pain at rest/night may require timely clinical assessment, especially if persistent or worsening."
+    }
+  ],
+
+  "contradiction_rules": [
+    {
+      "id": "no_swelling_vs_immediate",
+      "if": { "question_id": "swelling_presence", "answer": "No swelling" },
+      "conflicts_with": [
+        { "question_id": "injury_swelling_timing", "answer": "Immediate swelling within a few hours" }
+      ],
+      "message": "You indicated 'no swelling' but also 'immediate swelling within a few hours'. Please double-check."
+    },
+    {
+      "id": "gradual_vs_sudden_twist",
+      "if": { "question_id": "onset", "answer": "Gradual onset over time" },
+      "conflicts_with": [
+        { "question_id": "onset", "answer": "Sudden injury or twisting incident" }
+      ],
+      "message": "Your onset answers conflict (gradual vs sudden). Please choose the option that best fits."
+    }
+  ],
+
+  "questions": [
+    {
+      "id": "pain_location_precision",
       "question": "Where is the pain most noticeable?",
       "type": "single_choice",
       "answers": {
-        "Below the kneecap": {
-          "Patellar Tendinopathy": 0.85,
-          "Patellofemoral Pain Syndrome": 0.30
+        "Below the kneecap (tendon area)": {
+          "Patellar Tendinopathy": 0.90,
+          "Patellofemoral Pain Syndrome": 0.35
         },
-        "Above the kneecap": {
-          "Quadriceps Tendinopathy": 0.80
+        "Around/behind the kneecap (diffuse)": {
+          "Patellofemoral Pain Syndrome": 0.90,
+          "Patellar Tendinopathy": 0.40
         },
-        "Around or behind the kneecap": {
-          "Patellofemoral Pain Syndrome": 0.85
+        "Above the kneecap (quad tendon area)": {
+          "Quadriceps Tendinopathy": 0.85
         },
-        "Deep inside the knee": {
+        "Medial joint line (inside joint line)": {
           "Meniscal Injury": 0.75,
-          "Osteoarthritis": 0.60
+          "Osteoarthritis": 0.65
         },
-        "Outside of the knee": {
-          "Iliotibial Band Syndrome": 0.80
+        "Lateral joint line (outside joint line)": {
+          "Meniscal Injury": 0.65,
+          "Osteoarthritis": 0.55
+        },
+        "Outside the knee (upper outer/lateral thigh or side of knee)": {
+          "Iliotibial Band Syndrome": 0.85
+        },
+        "Inner knee below joint line (pes area)": {
+          "Pes Anserine Tendinopathy/Bursitis": 0.85
         }
       }
     },
@@ -42,45 +93,19 @@
       "question": "How would you best describe the pain?",
       "type": "single_choice",
       "answers": {
-        "Sharp during activity": {
-          "Patellar Tendinopathy": 0.75,
-          "Quadriceps Tendinopathy": 0.70
+        "Sharp mainly with loading": {
+          "Patellar Tendinopathy": 0.80,
+          "Quadriceps Tendinopathy": 0.75
         },
-        "Dull or aching": {
-          "Patellofemoral Pain Syndrome": 0.70,
+        "Dull/aching with activity": {
+          "Patellofemoral Pain Syndrome": 0.75,
           "Osteoarthritis": 0.65
         },
-        "Catching or locking sensation": {
+        "Catching/locking sensation": {
           "Meniscal Injury": 0.85
         },
-        "Stiffness more than pain": {
+        "Stiffness and grinding/creaking": {
           "Osteoarthritis": 0.80
-        }
-      }
-    },
-
-    {
-      "id": "aggravating_activities",
-      "question": "Which activities make the pain worse?",
-      "type": "multi_choice",
-      "answers": {
-        "Jumping": {
-          "Patellar Tendinopathy": 0.85
-        },
-        "Running": {
-          "Patellar Tendinopathy": 0.70,
-          "Iliotibial Band Syndrome": 0.75
-        },
-        "Squatting": {
-          "Patellar Tendinopathy": 0.75,
-          "Patellofemoral Pain Syndrome": 0.70
-        },
-        "Stairs or downhill walking": {
-          "Patellofemoral Pain Syndrome": 0.80,
-          "Osteoarthritis": 0.65
-        },
-        "Twisting or pivoting": {
-          "Meniscal Injury": 0.80
         }
       }
     },
@@ -92,85 +117,205 @@
       "answers": {
         "Gradual onset over time": {
           "Patellar Tendinopathy": 0.75,
-          "Patellofemoral Pain Syndrome": 0.70,
-          "Osteoarthritis": 0.80
+          "Patellofemoral Pain Syndrome": 0.75,
+          "Osteoarthritis": 0.80,
+          "Iliotibial Band Syndrome": 0.70
         },
-        "After increase in training or load": {
+        "After a noticeable increase in training/load": {
           "Patellar Tendinopathy": 0.85,
-          "Iliotibial Band Syndrome": 0.80
+          "Iliotibial Band Syndrome": 0.85,
+          "Patellofemoral Pain Syndrome": 0.70
         },
         "Sudden injury or twisting incident": {
-          "Meniscal Injury": 0.85
+          "Meniscal Injury": 0.85,
+          "ACL Injury (screening)": 0.70
         }
       }
     },
 
     {
-      "id": "morning_stiffness",
-      "question": "Do you experience stiffness in the morning?",
-      "type": "single_choice",
-      "answers": {
-        "No stiffness": {
-          "Patellar Tendinopathy": 0.65,
-          "Patellofemoral Pain Syndrome": 0.60
-        },
-        "Mild stiffness that eases quickly": {
-          "Patellofemoral Pain Syndrome": 0.65
-        },
-        "Significant stiffness lasting over 30 minutes": {
-          "Osteoarthritis": 0.85
-        }
-      }
-    },
-
-    {
-      "id": "swelling",
+      "id": "swelling_presence",
       "question": "Have you noticed swelling in the knee?",
       "type": "single_choice",
       "answers": {
         "No swelling": {
-          "Patellar Tendinopathy": 0.65,
-          "Patellofemoral Pain Syndrome": 0.60
+          "Patellar Tendinopathy": 0.70,
+          "Patellofemoral Pain Syndrome": 0.65,
+          "Iliotibial Band Syndrome": 0.65,
+          "Pes Anserine Tendinopathy/Bursitis": 0.65
         },
-        "Swelling after activity": {
+        "Some swelling after activity": {
           "Meniscal Injury": 0.70,
-          "Osteoarthritis": 0.65
+          "Osteoarthritis": 0.70
         },
-        "Immediate swelling after injury": {
-          "Meniscal Injury": 0.85
+        "Swelling that is persistent": {
+          "Osteoarthritis": 0.75,
+          "Meniscal Injury": 0.70
         }
       }
     },
 
     {
-      "id": "red_flags",
-      "question": "Do you experience any of the following?",
+      "id": "injury_swelling_timing",
+      "question": "If there was an injury, when did swelling appear?",
+      "type": "single_choice",
+      "answers": {
+        "No injury / not applicable": {},
+        "No swelling": {
+          "Patellar Tendinopathy": 0.70,
+          "Patellofemoral Pain Syndrome": 0.65
+        },
+        "Swelling later that day or next day": {
+          "Meniscal Injury": 0.75
+        },
+        "Immediate swelling within a few hours": {
+          "ACL Injury (screening)": 0.85,
+          "Meniscal Injury": 0.70
+        }
+      }
+    },
+
+    {
+      "id": "aggravating_activities",
+      "question": "Which activities make the pain worse?",
       "type": "multi_choice",
       "answers": {
-        "Locking of the knee": {
-          "Meniscal Injury": 0.90
+        "Jumping/plyometrics": {
+          "Patellar Tendinopathy": 0.90
         },
-        "Giving way or instability": {
+        "Running": {
+          "Iliotibial Band Syndrome": 0.80,
+          "Patellar Tendinopathy": 0.70,
+          "Patellofemoral Pain Syndrome": 0.65
+        },
+        "Squatting or lunging": {
+          "Patellar Tendinopathy": 0.75,
+          "Patellofemoral Pain Syndrome": 0.75,
+          "Osteoarthritis": 0.65
+        },
+        "Stairs (especially down) / downhill walking": {
+          "Patellofemoral Pain Syndrome": 0.80,
+          "Osteoarthritis": 0.70
+        },
+        "Twisting/pivoting": {
+          "Meniscal Injury": 0.85,
+          "ACL Injury (screening)": 0.70
+        },
+        "Prolonged sitting then standing (movie sign)": {
+          "Patellofemoral Pain Syndrome": 0.80
+        }
+      }
+    },
+
+    {
+      "id": "mechanical_symptoms",
+      "question": "Do you experience any mechanical symptoms?",
+      "type": "single_choice",
+      "answers": {
+        "No mechanical symptoms": {
+          "Patellofemoral Pain Syndrome": 0.70,
+          "Patellar Tendinopathy": 0.70,
+          "Iliotibial Band Syndrome": 0.65
+        },
+        "Catching (brief) but can still straighten": {
           "Meniscal Injury": 0.70
         },
-        "Night pain or pain at rest": {
+        "True locking (cannot fully straighten/extend)": {
+          "Meniscal Injury": 0.90
+        }
+      }
+    },
+
+    {
+      "id": "instability",
+      "question": "Do you feel the knee gives way?",
+      "type": "single_choice",
+      "answers": {
+        "No": {
+          "Patellofemoral Pain Syndrome": 0.65,
+          "Patellar Tendinopathy": 0.65
+        },
+        "Feels like it gives way due to pain": {
+          "Patellofemoral Pain Syndrome": 0.70,
+          "Patellar Tendinopathy": 0.65
+        },
+        "True instability (sudden giving way, confidence reduced)": {
+          "ACL Injury (screening)": 0.85,
+          "Meniscal Injury": 0.65
+        }
+      }
+    },
+
+    {
+      "id": "rest_night_pain",
+      "question": "How does it feel at rest or at night?",
+      "type": "single_choice",
+      "answers": {
+        "Mostly only with activity": {
+          "Patellar Tendinopathy": 0.75,
+          "Patellofemoral Pain Syndrome": 0.70,
+          "Iliotibial Band Syndrome": 0.70
+        },
+        "Occasional rest discomfort": {
+          "Osteoarthritis": 0.70
+        },
+        "Severe night pain or pain at rest": {
           "Osteoarthritis": 0.75
         }
       }
     },
 
     {
+      "id": "morning_stiffness",
+      "question": "Morning stiffness duration?",
+      "type": "single_choice",
+      "answers": {
+        "None": {
+          "Patellar Tendinopathy": 0.70,
+          "Patellofemoral Pain Syndrome": 0.65
+        },
+        "Mild stiffness that eases quickly": {
+          "Patellofemoral Pain Syndrome": 0.65
+        },
+        "Stiffness lasting > 30 minutes": {
+          "Osteoarthritis": 0.85
+        }
+      }
+    },
+
+    {
+      "id": "pain_severity_band",
+      "question": "How severe is the pain (best match)?",
+      "type": "single_choice",
+      "answers": {
+        "Mild (0–3/10)": {},
+        "Moderate (4–6/10)": {},
+        "Severe (7–10/10)": {}
+      }
+    },
+
+    {
+      "id": "systemic_features",
+      "question": "Any of these symptoms?",
+      "type": "single_choice",
+      "answers": {
+        "None": {},
+        "Fever/unwell or hot swollen joint": {}
+      }
+    },
+
+    {
       "id": "warm_up_effect",
-      "question": "How does the knee feel as you continue activity?",
+      "question": "How does pain change as you continue activity?",
       "type": "single_choice",
       "clinician_only": true,
       "answers": {
         "Improves as I warm up": {
-          "Patellar Tendinopathy": 0.80,
-          "Quadriceps Tendinopathy": 0.75
+          "Patellar Tendinopathy": 0.85,
+          "Quadriceps Tendinopathy": 0.80
         },
         "No real change": {
-          "Patellofemoral Pain Syndrome": 0.60
+          "Patellofemoral Pain Syndrome": 0.65
         },
         "Worsens the longer I continue": {
           "Osteoarthritis": 0.75
@@ -180,7 +325,7 @@
 
     {
       "id": "next_day_response",
-      "question": "How does your knee feel the day after activity?",
+      "question": "How does it feel the next day after a heavier session?",
       "type": "single_choice",
       "clinician_only": true,
       "answers": {
@@ -190,9 +335,54 @@
         "Better": {
           "Patellar Tendinopathy": 0.65
         },
-        "More painful or stiff": {
+        "Worse (pain/stiffness increased)": {
           "Osteoarthritis": 0.80,
           "Meniscal Injury": 0.65
+        }
+      }
+    },
+
+    {
+      "id": "mechanism_detail",
+      "question": "If injury-related, what best describes the mechanism?",
+      "type": "single_choice",
+      "clinician_only": true,
+      "answers": {
+        "Not injury-related / unsure": {},
+        "Twist on planted foot": {
+          "Meniscal Injury": 0.85,
+          "ACL Injury (screening)": 0.75
+        },
+        "Heard/felt a pop": {
+          "ACL Injury (screening)": 0.85
+        },
+        "Hyperextension": {
+          "ACL Injury (screening)": 0.75
+        },
+        "Direct blow to knee": {
+          "Meniscal Injury": 0.60
+        }
+      }
+    },
+
+    {
+      "id": "load_context",
+      "question": "Any recent load changes?",
+      "type": "multi_choice",
+      "clinician_only": true,
+      "answers": {
+        "Training volume increased": {
+          "Patellar Tendinopathy": 0.80,
+          "Iliotibial Band Syndrome": 0.80,
+          "Patellofemoral Pain Syndrome": 0.70
+        },
+        "New shoes / worn shoes": {
+          "Patellofemoral Pain Syndrome": 0.65,
+          "Iliotibial Band Syndrome": 0.70
+        },
+        "New surface / more hills": {
+          "Iliotibial Band Syndrome": 0.80,
+          "Patellofemoral Pain Syndrome": 0.65
         }
       }
     },
@@ -218,6 +408,7 @@
         }
       }
     }
-
   ]
 }
+
+
