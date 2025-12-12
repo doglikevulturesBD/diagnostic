@@ -1,38 +1,51 @@
 import streamlit as st
+
 from utils.loaders import load_module
 from engine.inference import initialise_scores, apply_answer
 from engine.normalise import normalise
+from engine.explain import generate_explanation
 from ui.components import section, result_bar, disclaimer
 
 
-# --- Page config ---
+# -------------------------------------------------
+# Page configuration
+# -------------------------------------------------
 st.set_page_config(
     page_title="Physio Diagnostic Assistant",
     layout="centered"
 )
 
-# --- Load CSS ---
-with open("assets/styles.css") as f:
+# -------------------------------------------------
+# Load global styles (I-TYPE compatible)
+# -------------------------------------------------
+with open("assets/styles.css", "r", encoding="utf-8") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
-
-# --- App title ---
+# -------------------------------------------------
+# Header
+# -------------------------------------------------
 st.title("Physio Diagnostic Assistant")
-st.caption("Clinical decision support • Rule-based • Bayesian-ready")
+st.caption("Clinical decision support • Explainable • Bayesian-ready")
 
-# --- Body part selection ---
+# -------------------------------------------------
+# Body part selection (expand later)
+# -------------------------------------------------
 body_part = st.selectbox(
     "Where is the primary pain?",
-    ["knee"]  # expand later
+    ["knee"]
 )
 
 module = load_module(body_part)
 conditions = module["conditions"]
 
-# --- Initialise inference ---
-scores = initialise_scores(conditions)
+# -------------------------------------------------
+# Initialise inference engine
+# -------------------------------------------------
+scores, trace = initialise_scores(conditions)
 
-# --- Questions ---
+# -------------------------------------------------
+# Question loop
+# -------------------------------------------------
 for q in module["questions"]:
     section(q["question"])
 
@@ -42,7 +55,14 @@ for q in module["questions"]:
             options=list(q["answers"].keys()),
             key=q["id"]
         )
-        scores = apply_answer(scores, q["answers"][answer])
+
+        scores, trace = apply_answer(
+            scores=scores,
+            trace=trace,
+            question=q["question"],
+            answer=answer,
+            answer_weights=q["answers"][answer]
+        )
 
     elif q["type"] == "multi_choice":
         answers = st.multiselect(
@@ -50,19 +70,62 @@ for q in module["questions"]:
             options=list(q["answers"].keys()),
             key=q["id"]
         )
+
         for a in answers:
-            scores = apply_answer(scores, q["answers"][a])
+            scores, trace = apply_answer(
+                scores=scores,
+                trace=trace,
+                question=q["question"],
+                answer=a,
+                answer_weights=q["answers"][a]
+            )
 
-# --- Results ---
-section("Most Likely Conditions")
-
+# -------------------------------------------------
+# Normalise results
+# -------------------------------------------------
 results = normalise(scores)
 
-for condition, probability in sorted(
-    results.items(), key=lambda x: -x[1]
-):
+# -------------------------------------------------
+# Confidence band helper
+# -------------------------------------------------
+def confidence_band(probability: float) -> str:
+    if probability >= 70:
+        return "High confidence"
+    elif probability >= 40:
+        return "Moderate confidence"
+    else:
+        return "Low confidence"
+
+
+# -------------------------------------------------
+# Results display
+# -------------------------------------------------
+section("Most Likely Conditions")
+
+sorted_results = sorted(
+    results.items(),
+    key=lambda x: -x[1]
+)
+
+for condition, probability in sorted_results:
+    band = confidence_band(probability)
+
+    # Result bar
     result_bar(condition, probability)
 
+    # Confidence label
+    if band == "High confidence":
+        st.success(band)
+    elif band == "Moderate confidence":
+        st.warning(band)
+    else:
+        st.info(band)
+
+    # Explanation
+    with st.expander("Why this result?"):
+        st.write(generate_explanation(condition, trace))
+
+# -------------------------------------------------
+# Disclaimer
+# -------------------------------------------------
 disclaimer()
-
-
