@@ -1,14 +1,8 @@
-def generate_explanation(condition: str, trace: dict):
+from typing import Dict, List
+
+
+def top_reasons(trace: Dict[str, List[str]], condition: str, max_items: int = 5) -> List[str]:
     reasons = trace.get(condition, [])
+    # show latest/high-impact reasons first (simple heuristic)
+    return reasons[:max_items] if reasons else []
 
-    if not reasons:
-        return "This condition remains a possibility based on general symptom patterns."
-
-    explanation = (
-        "This condition is suggested based on the following factors:\n"
-    )
-
-    for r in reasons:
-        explanation += f"• {r}\n"
-
-    return explanation
