@@ -1,1 +1,163 @@
+{
+  "body_part": "Knee",
+
+  "conditions": {
+    "Patellar Tendinopathy": { "prior": 0.25 },
+    "Patellofemoral Pain Syndrome": { "prior": 0.30 },
+    "Meniscal Injury": { "prior": 0.20 },
+    "Quadriceps Tendinopathy": { "prior": 0.10 },
+    "Iliotibial Band Syndrome": { "prior": 0.10 },
+    "Osteoarthritis": { "prior": 0.05 }
+  },
+
+  "questions": [
+
+    {
+      "id": "pain_location",
+      "question": "Where is the pain most noticeable?",
+      "type": "single_choice",
+      "answers": {
+        "Below the kneecap": {
+          "Patellar Tendinopathy": 0.85,
+          "Patellofemoral Pain Syndrome": 0.30
+        },
+        "Above the kneecap": {
+          "Quadriceps Tendinopathy": 0.80
+        },
+        "Around or behind the kneecap": {
+          "Patellofemoral Pain Syndrome": 0.85
+        },
+        "Inside the knee joint": {
+          "Meniscal Injury": 0.75,
+          "Osteoarthritis": 0.60
+        },
+        "Outside of the knee": {
+          "Iliotibial Band Syndrome": 0.80
+        }
+      }
+    },
+
+    {
+      "id": "pain_character",
+      "question": "How would you describe the pain?",
+      "type": "single_choice",
+      "answers": {
+        "Sharp with activity": {
+          "Patellar Tendinopathy": 0.75,
+          "Quadriceps Tendinopathy": 0.70
+        },
+        "Dull or aching": {
+          "Patellofemoral Pain Syndrome": 0.70,
+          "Osteoarthritis": 0.65
+        },
+        "Catching or locking sensation": {
+          "Meniscal Injury": 0.85
+        },
+        "Stiffness more than pain": {
+          "Osteoarthritis": 0.80
+        }
+      }
+    },
+
+    {
+      "id": "aggravating_activities",
+      "question": "Which activities make the pain worse?",
+      "type": "multi_choice",
+      "answers": {
+        "Jumping": {
+          "Patellar Tendinopathy": 0.85
+        },
+        "Running": {
+          "Patellar Tendinopathy": 0.70,
+          "Iliotibial Band Syndrome": 0.75
+        },
+        "Squatting": {
+          "Patellar Tendinopathy": 0.75,
+          "Patellofemoral Pain Syndrome": 0.70
+        },
+        "Stairs or downhill walking": {
+          "Patellofemoral Pain Syndrome": 0.80,
+          "Osteoarthritis": 0.65
+        },
+        "Twisting or pivoting": {
+          "Meniscal Injury": 0.80
+        }
+      }
+    },
+
+    {
+      "id": "onset",
+      "question": "How did the pain start?",
+      "type": "single_choice",
+      "answers": {
+        "Gradual over time": {
+          "Patellar Tendinopathy": 0.75,
+          "Patellofemoral Pain Syndrome": 0.70,
+          "Osteoarthritis": 0.80
+        },
+        "After increase in training or load": {
+          "Patellar Tendinopathy": 0.85,
+          "Iliotibial Band Syndrome": 0.80
+        },
+        "Sudden injury or twist": {
+          "Meniscal Injury": 0.85
+        }
+      }
+    },
+
+    {
+      "id": "morning_stiffness",
+      "question": "Do you experience stiffness in the morning?",
+      "type": "single_choice",
+      "answers": {
+        "No stiffness": {
+          "Patellar Tendinopathy": 0.65,
+          "Patellofemoral Pain Syndrome": 0.60
+        },
+        "Mild stiffness that eases quickly": {
+          "Patellofemoral Pain Syndrome": 0.65
+        },
+        "Significant stiffness lasting over 30 minutes": {
+          "Osteoarthritis": 0.85
+        }
+      }
+    },
+
+    {
+      "id": "swelling",
+      "question": "Have you noticed swelling?",
+      "type": "single_choice",
+      "answers": {
+        "No swelling": {
+          "Patellar Tendinopathy": 0.65,
+          "Patellofemoral Pain Syndrome": 0.60
+        },
+        "Swelling after activity": {
+          "Meniscal Injury": 0.70,
+          "Osteoarthritis": 0.65
+        },
+        "Immediate swelling after injury": {
+          "Meniscal Injury": 0.85
+        }
+      }
+    },
+
+    {
+      "id": "red_flags",
+      "question": "Do you have any of the following?",
+      "type": "multi_choice",
+      "answers": {
+        "Locking of the knee": {
+          "Meniscal Injury": 0.90
+        },
+        "Giving way or instability": {
+          "Meniscal Injury": 0.70
+        },
+        "Night pain or pain at rest": {
+          "Osteoarthritis": 0.75
+        }
+      }
+    }
+  ]
+}
 
