@@ -27,7 +27,7 @@
         "Around or behind the kneecap": {
           "Patellofemoral Pain Syndrome": 0.85
         },
-        "Inside the knee joint": {
+        "Deep inside the knee": {
           "Meniscal Injury": 0.75,
           "Osteoarthritis": 0.60
         },
@@ -39,10 +39,10 @@
 
     {
       "id": "pain_character",
-      "question": "How would you describe the pain?",
+      "question": "How would you best describe the pain?",
       "type": "single_choice",
       "answers": {
-        "Sharp with activity": {
+        "Sharp during activity": {
           "Patellar Tendinopathy": 0.75,
           "Quadriceps Tendinopathy": 0.70
         },
@@ -87,10 +87,10 @@
 
     {
       "id": "onset",
-      "question": "How did the pain start?",
+      "question": "How did the pain begin?",
       "type": "single_choice",
       "answers": {
-        "Gradual over time": {
+        "Gradual onset over time": {
           "Patellar Tendinopathy": 0.75,
           "Patellofemoral Pain Syndrome": 0.70,
           "Osteoarthritis": 0.80
@@ -99,7 +99,7 @@
           "Patellar Tendinopathy": 0.85,
           "Iliotibial Band Syndrome": 0.80
         },
-        "Sudden injury or twist": {
+        "Sudden injury or twisting incident": {
           "Meniscal Injury": 0.85
         }
       }
@@ -125,7 +125,7 @@
 
     {
       "id": "swelling",
-      "question": "Have you noticed swelling?",
+      "question": "Have you noticed swelling in the knee?",
       "type": "single_choice",
       "answers": {
         "No swelling": {
@@ -144,7 +144,7 @@
 
     {
       "id": "red_flags",
-      "question": "Do you have any of the following?",
+      "question": "Do you experience any of the following?",
       "type": "multi_choice",
       "answers": {
         "Locking of the knee": {
@@ -157,7 +157,67 @@
           "Osteoarthritis": 0.75
         }
       }
+    },
+
+    {
+      "id": "warm_up_effect",
+      "question": "How does the knee feel as you continue activity?",
+      "type": "single_choice",
+      "clinician_only": true,
+      "answers": {
+        "Improves as I warm up": {
+          "Patellar Tendinopathy": 0.80,
+          "Quadriceps Tendinopathy": 0.75
+        },
+        "No real change": {
+          "Patellofemoral Pain Syndrome": 0.60
+        },
+        "Worsens the longer I continue": {
+          "Osteoarthritis": 0.75
+        }
+      }
+    },
+
+    {
+      "id": "next_day_response",
+      "question": "How does your knee feel the day after activity?",
+      "type": "single_choice",
+      "clinician_only": true,
+      "answers": {
+        "About the same": {
+          "Patellofemoral Pain Syndrome": 0.60
+        },
+        "Better": {
+          "Patellar Tendinopathy": 0.65
+        },
+        "More painful or stiff": {
+          "Osteoarthritis": 0.80,
+          "Meniscal Injury": 0.65
+        }
+      }
+    },
+
+    {
+      "id": "age_band",
+      "question": "Which age range best applies?",
+      "type": "single_choice",
+      "clinician_only": true,
+      "answers": {
+        "Under 25": {
+          "Patellofemoral Pain Syndrome": 0.75
+        },
+        "25–40": {
+          "Patellar Tendinopathy": 0.70
+        },
+        "40–60": {
+          "Meniscal Injury": 0.60,
+          "Osteoarthritis": 0.65
+        },
+        "Over 60": {
+          "Osteoarthritis": 0.85
+        }
+      }
     }
+
   ]
 }
-
