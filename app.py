@@ -28,6 +28,20 @@ st.title("Physio Diagnostic Assistant")
 st.caption("Clinical decision support • Explainable • Safety-aware")
 
 # -------------------------------------------------
+# Mode selection
+# -------------------------------------------------
+mode = st.radio(
+    "Select mode:",
+    ["Patient", "Clinician"],
+    horizontal=True
+)
+
+clinician_mode = mode == "Clinician"
+
+if clinician_mode:
+    st.info("Clinician mode enabled — advanced questions and explanations shown.")
+
+# -------------------------------------------------
 # Body part selection
 # -------------------------------------------------
 body_part = st.selectbox(
@@ -56,9 +70,14 @@ RED_FLAG_ANSWERS = {
 }
 
 # -------------------------------------------------
-# Question loop
+# Question loop (mode-aware)
 # -------------------------------------------------
 for q in module["questions"]:
+
+    # Skip clinician-only questions in patient mode
+    if q.get("clinician_only", False) and not clinician_mode:
+        continue
+
     section(q["question"])
 
     if q["type"] == "single_choice":
@@ -68,7 +87,6 @@ for q in module["questions"]:
             key=q["id"]
         )
 
-        # Track red flags
         if answer in RED_FLAG_ANSWERS:
             red_flags_triggered.append(answer)
 
@@ -116,15 +134,14 @@ def confidence_band(probability: float) -> str:
         return "Low confidence"
 
 # -------------------------------------------------
-# Red-flag alert (OVERRIDE, not hide)
+# Red-flag alert
 # -------------------------------------------------
 if red_flags_triggered:
     st.error(
         "⚠️ **Potential red flags detected**\n\n"
-        "Based on your responses, some features may require **urgent or in-person assessment**.\n\n"
+        "Some responses suggest the need for **urgent or in-person assessment**.\n\n"
         "**Red flags identified:**\n"
         + "\n".join(f"• {rf}" for rf in set(red_flags_triggered))
-        + "\n\nThis tool does not replace professional evaluation."
     )
 
 # -------------------------------------------------
@@ -142,7 +159,6 @@ for condition, probability in sorted_results:
 
     result_bar(condition, probability)
 
-    # Confidence indicator
     if band == "High confidence":
         st.success(band)
     elif band == "Moderate confidence":
@@ -150,11 +166,19 @@ for condition, probability in sorted_results:
     else:
         st.info(band)
 
-    # Explanation
     with st.expander("Why this result?"):
-        st.write(generate_explanation(condition, trace))
+        explanation = generate_explanation(condition, trace)
+
+        if clinician_mode:
+            explanation += (
+                "\n\n*Clinician note: Probabilities reflect weighted symptom alignment, "
+                "not definitive diagnosis. Consider examination and imaging as indicated.*"
+            )
+
+        st.write(explanation)
 
 # -------------------------------------------------
 # Disclaimer
 # -------------------------------------------------
 disclaimer()
+
