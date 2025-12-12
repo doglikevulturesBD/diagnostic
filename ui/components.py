@@ -5,14 +5,14 @@ def section(title: str):
     st.markdown(f"### {title}")
 
 
-def result_bar(label: str, value: float):
-    st.write(f"**{label}** — {value}%")
-    st.progress(min(value / 100, 1.0))
-
-
-def disclaimer():
-    st.info(
-        "This tool provides clinical decision support only and does not "
-        "replace professional diagnosis or assessment."
-    )
-
+def disclaimer(mode: str):
+    if mode == "Patient":
+        st.info(
+            "This tool supports clinical reasoning and does not provide a medical diagnosis. "
+            "If symptoms are severe, worsening, or concerning, seek professional assessment."
+        )
+    else:
+        st.info(
+            "Clinical decision support only. Not a diagnosis. Use alongside examination, "
+            "clinical judgement, and investigations where indicated."
+        )
