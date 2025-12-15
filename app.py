@@ -22,19 +22,13 @@ from engine.mechanics import (
 # Helper: merge two biomechanical modules safely
 # -------------------------------------------------
 def merge_modules(base, addendum):
-    # Merge questions
     base["questions"].extend(addendum.get("questions", []))
-
-    # Merge mechanical features
     base["mechanical_features"].update(
         addendum.get("mechanical_features", {})
     )
-
-    # Merge contributor mappings
     base.setdefault("contributor_mapping", {}).update(
         addendum.get("contributor_mapping", {})
     )
-
     return base
 
 # -------------------------------------------------
@@ -59,7 +53,6 @@ if clinician_mode:
 # -------------------------------------------------
 knee_module = load_json("modules/knee_mechanics.json")
 cross_joint = load_json("modules/knee_cross_joint_addendum.json")
-
 module = merge_modules(knee_module, cross_joint)
 
 # -------------------------------------------------
@@ -94,7 +87,7 @@ for q in module["questions"]:
             add_feature_updates(patient_vec, q["answers"].get(a, {}))
 
 # -------------------------------------------------
-# Scoring
+# Initial scoring
 # -------------------------------------------------
 primary_scores, contributor_scores = score_primary_and_contributors(
     module,
@@ -105,7 +98,7 @@ primary, secondary = select_dominant(primary_scores, ratio=0.75, max_items=3)
 contrib, contrib_secondary = select_dominant(contributor_scores, ratio=0.70, max_items=3)
 
 # -------------------------------------------------
-# Output
+# Output summary
 # -------------------------------------------------
 st.header("Biomechanical Summary")
 
@@ -116,7 +109,6 @@ else:
     st.write(f"**{primary.name}**")
     st.write(pattern_strength(primary_scores))
 
-    # Contributors
     st.subheader("Likely contributing mechanics (upstream / downstream)")
     if contrib:
         st.write(f"**{contrib.name}**")
@@ -139,17 +131,55 @@ else:
     else:
         st.write("No strong hip or ankle contributors identified.")
 
-    # Clinician prompts
-    if clinician_mode:
-        st.subheader("What would help differentiate further")
-        patt = next(
-            (p for p in module["patterns"]["primary"]
-             if p["id"] == primary.pattern_id),
-            None
+# =================================================
+# 🔍 NEW SECTION — EXERCISE AS PROBES (ONLY ADDITION)
+# =================================================
+
+st.header("Movement Checks (Exercise Probes)")
+st.caption(
+    "These movements help confirm or refine the mechanical findings. "
+    "Stop if pain is sharp, severe, or concerning."
+)
+
+probes = load_json("modules/exercise_probes.json")["exercise_probes"]
+
+for probe in probes:
+    if contrib and contrib.primary_feature in probe["targets"]:
+        st.subheader(probe["name"])
+        st.write(probe["instructions"])
+
+        response = st.radio(
+            "What best describes your experience?",
+            list(probe["responses"].keys()),
+            key=f"probe_{probe['id']}"
         )
-        if patt:
-            for d in patt.get("differentiators", []):
-                st.write(f"• {d}")
+
+        add_feature_updates(patient_vec, probe["responses"][response])
+
+# -------------------------------------------------
+# Re-score AFTER probes
+# -------------------------------------------------
+primary_scores, contributor_scores = score_primary_and_contributors(
+    module,
+    patient_vec
+)
+
+contrib, contrib_secondary = select_dominant(
+    contributor_scores,
+    ratio=0.70,
+    max_items=3
+)
+
+st.subheader("Refined Mechanical Interpretation")
+if contrib:
+    st.write(
+        f"After movement checks, **{contrib.name}** "
+        "remains the most likely contributing factor."
+    )
+else:
+    st.write(
+        "Movement checks reduced confidence in major hip or ankle contributors."
+    )
 
 # -------------------------------------------------
 # Footer
