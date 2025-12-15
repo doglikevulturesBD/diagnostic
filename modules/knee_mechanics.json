@@ -2,260 +2,328 @@
   "body_part": "Knee",
 
   "mechanical_features": {
-    "pfj_compression_intolerance": "Patellofemoral compression intolerance (knee flexion load)",
-    "tendon_tensile_overload_patellar": "Patellar tendon tensile overload",
-    "tendon_tensile_overload_quad": "Quadriceps tendon tensile overload",
-    "rotation_shear_sensitivity": "Rotation/shear sensitivity (meniscus/ligament irritability pattern)",
-    "lateral_friction_pattern_itb": "Lateral friction pattern (ITB-related)",
-    "degenerative_joint_pattern": "Degenerative joint pattern (stiffness/crepitus/age-context)",
-    "medial_insertion_pes": "Medial insertion irritation (pes anserine region)",
+    "anterior_knee_tensile_load": { "desc": "Tensile loading through patellar/quad tendon with jumping/squats" },
+    "patellofemoral_compression": { "desc": "Compressive patellofemoral joint load (stairs, sitting, squats)" },
+    "tibiofemoral_shear_rotation": { "desc": "Shear/rotation demand across tibiofemoral joint (twisting/pivoting)" },
+    "tibiofemoral_compression_degeneration": { "desc": "Compressive/degenerative tibiofemoral joint loading (age, stiffness, grinding)" },
+    "lateral_friction_itb": { "desc": "Lateral friction/compression pattern consistent with ITB mechanics" },
+    "medial_pes_load": { "desc": "Medial proximal tibia load pattern consistent with pes anserine" },
+    "ligamentous_instability": { "desc": "Instability mechanics suggesting ligament contribution (screening only)" },
 
-    "medial_compartment_compression": "Medial tibiofemoral compression bias (varus/load distribution)",
-    "terminal_extension_intolerance": "Terminal extension intolerance (locked-knee standing / end-range extension irritation)",
-    "load_endurance_deficit": "Load endurance deficit (fine initially, builds with duration/volume)",
-    "post_injury_irritability": "Post-injury irritability (capacity reduced, multi-load sensitivity)",
-
-    "proximal_control_deficit_hip": "Hip/pelvis control deficit (frontal plane / dynamic valgus tendency)",
-    "hip_internal_rotation_bias": "Hip internal rotation/adduction bias contributing to knee load",
-    "ankle_dorsiflexion_restriction": "Ankle dorsiflexion restriction increasing knee demand",
-    "foot_load_bias": "Foot load bias (pronation/supination) contributing to tibial rotation / knee stress",
-
-    "high_irritability": "High irritability / sensitised state (limits self-management)"
-  },
-
-  "tissue_mapping": {
-    "pfj_compression_intolerance": {
-      "likely_structures": ["Patellofemoral joint", "Retinaculum", "Peripatellar soft tissues"],
-      "common_labels": ["Patellofemoral Pain Syndrome"]
-    },
-    "tendon_tensile_overload_patellar": {
-      "likely_structures": ["Patellar tendon", "Inferior pole patella"],
-      "common_labels": ["Patellar Tendinopathy"]
-    },
-    "tendon_tensile_overload_quad": {
-      "likely_structures": ["Quadriceps tendon", "Superior pole patella"],
-      "common_labels": ["Quadriceps Tendinopathy"]
-    },
-    "rotation_shear_sensitivity": {
-      "likely_structures": ["Meniscus", "Capsule", "Ligament irritation (screening)"],
-      "common_labels": ["Meniscal irritation/injury (screening)", "Internal derangement (screening)"]
-    },
-    "lateral_friction_pattern_itb": {
-      "likely_structures": ["Iliotibial band", "Lateral femoral condyle region"],
-      "common_labels": ["Iliotibial Band Syndrome"]
-    },
-    "degenerative_joint_pattern": {
-      "likely_structures": ["Tibiofemoral joint surfaces", "Synovium"],
-      "common_labels": ["Osteoarthritis pattern (clinical)"]
-    },
-    "medial_insertion_pes": {
-      "likely_structures": ["Pes anserine tendons/bursa"],
-      "common_labels": ["Pes Anserine Tendinopathy/Bursitis"]
-    },
-    "medial_compartment_compression": {
-      "likely_structures": ["Medial tibiofemoral compartment", "Medial joint line structures"],
-      "common_labels": ["Medial compartment overload / OA-like (pattern)"]
-    },
-    "terminal_extension_intolerance": {
-      "likely_structures": ["Posterior capsule / end-range extension structures", "Tibiofemoral joint irritation"],
-      "common_labels": ["Extension intolerance pattern (screening)"]
-    },
-    "load_endurance_deficit": {
-      "likely_structures": ["Global knee capacity / endurance tolerance"],
-      "common_labels": ["Capacity/volume intolerance pattern"]
-    },
-    "post_injury_irritability": {
-      "likely_structures": ["Knee joint/capsule (irritable)", "Residual inflammation/irritation (non-specific)"],
-      "common_labels": ["Post-injury irritability pattern"]
-    }
-  },
-
-  "contributor_mapping": {
-    "proximal_control_deficit_hip": {
-      "likely_contributors": ["Hip abductors/external rotators endurance/control", "Pelvic control strategy"],
-      "why_it_matters": "Can increase dynamic valgus and PFJ stress, and overload tendons via altered landing/squat mechanics."
-    },
-    "hip_internal_rotation_bias": {
-      "likely_contributors": ["Femoral IR/adduction tendency", "Movement strategy during single-leg tasks"],
-      "why_it_matters": "Can increase PFJ stress and contribute to anterior knee symptoms during loaded flexion tasks."
-    },
-    "ankle_dorsiflexion_restriction": {
-      "likely_contributors": ["Restricted ankle dorsiflexion", "Compensatory pronation / knee demand"],
-      "why_it_matters": "Can increase knee flexion demand and PFJ/tendon load during squats, stairs, running."
-    },
-    "foot_load_bias": {
-      "likely_contributors": ["Foot pronation/supination bias", "Tibial rotation mechanics"],
-      "why_it_matters": "Can shift knee loading medially/laterally and alter rotation mechanics."
-    }
+    "hip_adduction_internal_rotation": { "desc": "Hip control contributor (dynamic valgus, femoral IR) increasing knee load" },
+    "ankle_dorsiflexion_limit": { "desc": "Ankle DF restriction increasing knee load (compensation)" },
+    "foot_pronation_bias": { "desc": "Foot pronation bias altering tibial rotation/valgus mechanics" }
   },
 
   "red_flags": [
     {
-      "trigger": {"question_id": "systemic_red_flags", "answer": "Fever/unwell OR hot red swollen joint"},
+      "trigger": { "question_id": "injury_swelling_timing", "answer": "Immediate swelling within a few hours" },
       "severity": "urgent",
-      "message": "Systemic symptoms with a hot/red/swollen joint can be concerning. Seek urgent medical assessment."
+      "message": "Immediate swelling after injury can indicate significant internal injury. Consider urgent in-person assessment."
     },
     {
-      "trigger": {"question_id": "weight_bearing", "answer": "Unable to weight bear"},
+      "trigger": { "question_id": "mechanical_symptoms", "answer": "True locking (cannot fully straighten/extend)" },
       "severity": "urgent",
-      "message": "Inability to weight bear after injury may need urgent assessment or imaging."
+      "message": "True locking can indicate a mechanical block within the knee. Consider urgent in-person assessment."
     },
     {
-      "trigger": {"question_id": "true_locking", "answer": "Yes (cannot fully straighten/extend)"},
+      "trigger": { "question_id": "systemic_features", "answer": "Fever/unwell or hot swollen joint" },
       "severity": "urgent",
-      "message": "True locking can indicate a mechanical block. Consider urgent in-person assessment."
+      "message": "Systemic symptoms with a hot/swollen joint can be concerning. Seek urgent medical assessment."
+    },
+    {
+      "trigger": { "question_id": "rest_night_pain", "answer": "Severe night pain or pain at rest" },
+      "severity": "priority",
+      "message": "Significant pain at rest/night may require timely clinical assessment, especially if persistent or worsening."
     }
   ],
 
   "contradiction_rules": [
     {
-      "id": "no_injury_but_immediate_swelling",
-      "if": {"question_id": "injury_onset", "answer": "No injury / gradual"},
-      "conflicts_with": [{"question_id": "swelling_timing", "answer": "Immediate (within a few hours)"}],
-      "message": "You selected gradual/no injury but also immediate swelling. Please double-check."
+      "id": "no_swelling_vs_immediate",
+      "if": { "question_id": "swelling_presence", "answer": "No swelling" },
+      "conflicts_with": [
+        { "question_id": "injury_swelling_timing", "answer": "Immediate swelling within a few hours" }
+      ],
+      "message": "You indicated 'no swelling' but also 'immediate swelling within a few hours'. Please double-check."
+    },
+    {
+      "id": "gradual_vs_sudden_twist",
+      "if": { "question_id": "onset", "answer": "Gradual onset over time" },
+      "conflicts_with": [
+        { "question_id": "onset", "answer": "Sudden injury or twisting incident" }
+      ],
+      "message": "Your onset answers conflict (gradual vs sudden). Please choose the option that best fits."
+    }
+  ],
+
+  "questions": [
+    {
+      "id": "pain_location_precision",
+      "question": "Where is the pain most noticeable?",
+      "type": "single_choice",
+      "answers": {
+        "Below the kneecap (tendon area)": { "anterior_knee_tensile_load": 1.0 },
+        "Around/behind the kneecap (diffuse)": { "patellofemoral_compression": 1.0, "hip_adduction_internal_rotation": 0.2 },
+        "Above the kneecap (quad tendon area)": { "anterior_knee_tensile_load": 0.9 },
+        "Medial joint line (inside joint line)": { "tibiofemoral_compression_degeneration": 0.6, "tibiofemoral_shear_rotation": 0.4 },
+        "Lateral joint line (outside joint line)": { "tibiofemoral_compression_degeneration": 0.5, "tibiofemoral_shear_rotation": 0.4 },
+        "Outside the knee (upper outer/lateral thigh or side of knee)": { "lateral_friction_itb": 1.0 },
+        "Inner knee below joint line (pes area)": { "medial_pes_load": 1.0, "foot_pronation_bias": 0.2 }
+      }
+    },
+
+    {
+      "id": "pain_character",
+      "question": "How would you best describe the pain?",
+      "type": "single_choice",
+      "answers": {
+        "Sharp mainly with loading": { "anterior_knee_tensile_load": 0.8 },
+        "Dull/aching with activity": { "patellofemoral_compression": 0.6, "tibiofemoral_compression_degeneration": 0.4 },
+        "Catching/locking sensation": { "tibiofemoral_shear_rotation": 0.9 },
+        "Stiffness and grinding/creaking": { "tibiofemoral_compression_degeneration": 0.9, "patellofemoral_compression": 0.4 }
+      }
+    },
+
+    {
+      "id": "onset",
+      "question": "How did the pain begin?",
+      "type": "single_choice",
+      "answers": {
+        "Gradual onset over time": { "tibiofemoral_compression_degeneration": 0.5, "patellofemoral_compression": 0.4, "anterior_knee_tensile_load": 0.4, "lateral_friction_itb": 0.3 },
+        "After a noticeable increase in training/load": { "anterior_knee_tensile_load": 0.6, "lateral_friction_itb": 0.6, "patellofemoral_compression": 0.3 },
+        "Sudden injury or twisting incident": { "tibiofemoral_shear_rotation": 0.8, "ligamentous_instability": 0.4 }
+      }
+    },
+
+    {
+      "id": "swelling_presence",
+      "question": "Have you noticed swelling in the knee?",
+      "type": "single_choice",
+      "answers": {
+        "No swelling": { "anterior_knee_tensile_load": 0.2, "patellofemoral_compression": 0.2, "lateral_friction_itb": 0.2, "medial_pes_load": 0.2 },
+        "Some swelling after activity": { "tibiofemoral_shear_rotation": 0.4, "tibiofemoral_compression_degeneration": 0.4 },
+        "Swelling that is persistent": { "tibiofemoral_compression_degeneration": 0.6, "tibiofemoral_shear_rotation": 0.4 }
+      }
+    },
+
+    {
+      "id": "injury_swelling_timing",
+      "question": "If there was an injury, when did swelling appear?",
+      "type": "single_choice",
+      "answers": {
+        "No injury / not applicable": {},
+        "No swelling": {},
+        "Swelling later that day or next day": { "tibiofemoral_shear_rotation": 0.6 },
+        "Immediate swelling within a few hours": { "ligamentous_instability": 0.8, "tibiofemoral_shear_rotation": 0.4 }
+      }
+    },
+
+    {
+      "id": "aggravating_activities",
+      "question": "Which activities make the pain worse?",
+      "type": "multi_choice",
+      "answers": {
+        "Jumping/plyometrics": { "anterior_knee_tensile_load": 0.9 },
+        "Running": { "lateral_friction_itb": 0.7, "patellofemoral_compression": 0.4, "anterior_knee_tensile_load": 0.3 },
+        "Squatting or lunging": { "patellofemoral_compression": 0.6, "anterior_knee_tensile_load": 0.6, "ankle_dorsiflexion_limit": 0.2 },
+        "Stairs (especially down) / downhill walking": { "patellofemoral_compression": 0.8, "tibiofemoral_compression_degeneration": 0.3 },
+        "Twisting/pivoting": { "tibiofemoral_shear_rotation": 0.9, "ligamentous_instability": 0.3 },
+        "Prolonged sitting then standing (movie sign)": { "patellofemoral_compression": 0.8, "hip_adduction_internal_rotation": 0.2 }
+      }
+    },
+
+    {
+      "id": "mechanical_symptoms",
+      "question": "Do you experience any mechanical symptoms?",
+      "type": "single_choice",
+      "answers": {
+        "No mechanical symptoms": {},
+        "Catching (brief) but can still straighten": { "tibiofemoral_shear_rotation": 0.6 },
+        "True locking (cannot fully straighten/extend)": { "tibiofemoral_shear_rotation": 0.9 }
+      }
+    },
+
+    {
+      "id": "instability",
+      "question": "Do you feel the knee gives way?",
+      "type": "single_choice",
+      "answers": {
+        "No": {},
+        "Feels like it gives way due to pain": { "patellofemoral_compression": 0.3, "anterior_knee_tensile_load": 0.3 },
+        "True instability (sudden giving way, confidence reduced)": { "ligamentous_instability": 0.9, "tibiofemoral_shear_rotation": 0.4 }
+      }
+    },
+
+    {
+      "id": "rest_night_pain",
+      "question": "How does it feel at rest or at night?",
+      "type": "single_choice",
+      "answers": {
+        "Mostly only with activity": {},
+        "Occasional rest discomfort": { "tibiofemoral_compression_degeneration": 0.4 },
+        "Severe night pain or pain at rest": { "tibiofemoral_compression_degeneration": 0.6 }
+      }
+    },
+
+    {
+      "id": "morning_stiffness",
+      "question": "Morning stiffness duration?",
+      "type": "single_choice",
+      "answers": {
+        "None": {},
+        "Mild stiffness that eases quickly": { "tibiofemoral_compression_degeneration": 0.2 },
+        "Stiffness lasting > 30 minutes": { "tibiofemoral_compression_degeneration": 0.8 }
+      }
+    },
+
+    {
+      "id": "systemic_features",
+      "question": "Any of these symptoms?",
+      "type": "single_choice",
+      "answers": {
+        "None": {},
+        "Fever/unwell or hot swollen joint": {}
+      }
+    },
+
+    {
+      "id": "warm_up_effect",
+      "question": "How does pain change as you continue activity?",
+      "type": "single_choice",
+      "clinician_only": true,
+      "answers": {
+        "Improves as I warm up": { "anterior_knee_tensile_load": 0.6 },
+        "No real change": { "patellofemoral_compression": 0.3 },
+        "Worsens the longer I continue": { "tibiofemoral_compression_degeneration": 0.6 }
+      }
+    },
+
+    {
+      "id": "mechanism_detail",
+      "question": "If injury-related, what best describes the mechanism?",
+      "type": "single_choice",
+      "clinician_only": true,
+      "answers": {
+        "Not injury-related / unsure": {},
+        "Twist on planted foot": { "tibiofemoral_shear_rotation": 0.8, "ligamentous_instability": 0.3 },
+        "Heard/felt a pop": { "ligamentous_instability": 0.8 },
+        "Hyperextension": { "ligamentous_instability": 0.6 },
+        "Direct blow to knee": { "tibiofemoral_shear_rotation": 0.2 }
+      }
+    },
+
+    {
+      "id": "load_context",
+      "question": "Any recent load changes?",
+      "type": "multi_choice",
+      "clinician_only": true,
+      "answers": {
+        "Training volume increased": { "anterior_knee_tensile_load": 0.5, "lateral_friction_itb": 0.5, "patellofemoral_compression": 0.3 },
+        "New shoes / worn shoes": { "foot_pronation_bias": 0.4, "patellofemoral_compression": 0.2 },
+        "New surface / more hills": { "lateral_friction_itb": 0.6, "patellofemoral_compression": 0.2 }
+      }
     }
   ],
 
   "patterns": {
     "primary": [
       {
-        "id": "pfj_compression_pattern",
-        "name": "Anterior knee compression pattern",
-        "primary_feature": "pfj_compression_intolerance",
-        "required_any": ["pfj_compression_intolerance"],
-        "core": {"pfj_compression_intolerance": 1.0},
-        "supporting": {"ankle_dorsiflexion_restriction": 0.20, "proximal_control_deficit_hip": 0.25},
-        "exclusion": {"rotation_shear_sensitivity": 0.30},
-        "differentiators": [
-          "Diffuse peripatellar pain + stairs/sitting strongly supports compression intolerance.",
-          "Very focal inferior patellar pain with jumping points more to patellar tendon overload."
-        ]
-      },
-      {
         "id": "patellar_tendon_overload",
-        "name": "Patellar tendon overload pattern",
-        "primary_feature": "tendon_tensile_overload_patellar",
-        "required_any": ["tendon_tensile_overload_patellar"],
-        "core": {"tendon_tensile_overload_patellar": 1.0},
-        "supporting": {"load_endurance_deficit": 0.25, "ankle_dorsiflexion_restriction": 0.15},
-        "exclusion": {"degenerative_joint_pattern": 0.25},
+        "name": "Anterior tensile overload pattern (patellar/quad tendon)",
+        "primary_feature": "anterior_knee_tensile_load",
+        "required_any": ["anterior_knee_tensile_load"],
+        "core": { "anterior_knee_tensile_load": 1.2 },
+        "supporting": { "patellofemoral_compression": 0.3, "ankle_dorsiflexion_limit": 0.2 },
+        "exclusion": { "tibiofemoral_shear_rotation": 0.4 },
         "differentiators": [
-          "Focal pain below kneecap + jumping/landing pain supports patellar tendon overload.",
-          "If pain is mainly diffuse behind the kneecap with sitting/stairs, consider compression pattern."
+          "Single-leg decline squat pain location and dose-response",
+          "Palpation tenderness at patellar tendon vs quad tendon",
+          "Pain improves with isometric loading short-term"
         ]
       },
       {
-        "id": "quad_tendon_overload",
-        "name": "Quadriceps tendon overload pattern",
-        "primary_feature": "tendon_tensile_overload_quad",
-        "required_any": ["tendon_tensile_overload_quad"],
-        "core": {"tendon_tensile_overload_quad": 1.0},
-        "supporting": {"load_endurance_deficit": 0.15},
-        "exclusion": {"tendon_tensile_overload_patellar": 0.30},
+        "id": "pfj_compression_pattern",
+        "name": "Patellofemoral compression pattern",
+        "primary_feature": "patellofemoral_compression",
+        "required_any": ["patellofemoral_compression"],
+        "core": { "patellofemoral_compression": 1.2 },
+        "supporting": { "hip_adduction_internal_rotation": 0.6, "foot_pronation_bias": 0.2, "ankle_dorsiflexion_limit": 0.2 },
+        "exclusion": { "tibiofemoral_shear_rotation": 0.3 },
         "differentiators": [
-          "This pattern is unlikely unless pain is clearly above the kneecap at the quad tendon insertion.",
-          "If pain is below kneecap, patellar tendon overload is more consistent."
+          "Pain with stairs down and prolonged sitting (movie sign)",
+          "Dynamic valgus during single-leg squat/step-down",
+          "Retropatellar pain provocation vs tendon-local pain"
         ]
       },
       {
-        "id": "rotation_shear_pattern",
-        "name": "Rotation/shear irritation pattern (screening)",
-        "primary_feature": "rotation_shear_sensitivity",
-        "required_any": ["rotation_shear_sensitivity"],
-        "core": {"rotation_shear_sensitivity": 1.0},
-        "supporting": {"post_injury_irritability": 0.35, "high_irritability": 0.35},
-        "exclusion": {"tendon_tensile_overload_patellar": 0.20, "tendon_tensile_overload_quad": 0.20},
+        "id": "meniscal_shear_rotation",
+        "name": "Tibiofemoral shear/rotation pattern (meniscal-type mechanics)",
+        "primary_feature": "tibiofemoral_shear_rotation",
+        "required_any": ["tibiofemoral_shear_rotation"],
+        "core": { "tibiofemoral_shear_rotation": 1.2 },
+        "supporting": { "ligamentous_instability": 0.3 },
+        "exclusion": { "anterior_knee_tensile_load": 0.3 },
         "differentiators": [
-          "Twist/pivot + catching/locking strengthens this pattern.",
-          "True locking or inability to fully extend increases urgency."
+          "Joint line tenderness and torsional provocation",
+          "Catching/locking with pivot/twist",
+          "Effusion timing and response to load modification"
         ]
       },
       {
-        "id": "itb_friction_pattern",
-        "name": "Lateral friction pattern (ITB-like)",
-        "primary_feature": "lateral_friction_pattern_itb",
-        "required_any": ["lateral_friction_pattern_itb"],
-        "core": {"lateral_friction_pattern_itb": 1.0},
-        "supporting": {"foot_load_bias": 0.20},
-        "exclusion": {"rotation_shear_sensitivity": 0.20},
+        "id": "oa_compression_degeneration",
+        "name": "Tibiofemoral compression/degenerative pattern (OA-type mechanics)",
+        "primary_feature": "tibiofemoral_compression_degeneration",
+        "required_any": ["tibiofemoral_compression_degeneration"],
+        "core": { "tibiofemoral_compression_degeneration": 1.2 },
+        "supporting": { "patellofemoral_compression": 0.3 },
+        "exclusion": { "ligamentous_instability": 0.2 },
         "differentiators": [
-          "Lateral pain mainly with running (especially downhill) supports ITB friction pattern."
+          "Morning stiffness and crepitus pattern",
+          "Pain increases with longer duration loading",
+          "Reduced tolerance to compression-heavy tasks"
         ]
       },
       {
-        "id": "degenerative_joint_pattern",
-        "name": "Degenerative joint pattern (OA-like)",
-        "primary_feature": "degenerative_joint_pattern",
-        "required_any": ["degenerative_joint_pattern"],
-        "core": {"degenerative_joint_pattern": 1.0},
-        "supporting": {"load_endurance_deficit": 0.20, "high_irritability": 0.20},
-        "exclusion": {"tendon_tensile_overload_patellar": 0.20, "tendon_tensile_overload_quad": 0.20},
+        "id": "itb_lateral_friction",
+        "name": "Lateral friction/compression pattern (ITB-type mechanics)",
+        "primary_feature": "lateral_friction_itb",
+        "required_any": ["lateral_friction_itb"],
+        "core": { "lateral_friction_itb": 1.2 },
+        "supporting": { "hip_adduction_internal_rotation": 0.4, "foot_pronation_bias": 0.2 },
+        "exclusion": { "tibiofemoral_shear_rotation": 0.2 },
         "differentiators": [
-          "Morning stiffness >30 minutes + crepitus + age-context strengthens this pattern.",
-          "Sharp load-specific tendon pain with warm-up effect suggests tendon overload instead."
+          "Pain with running, hills, repetitive flexion/extension",
+          "Tenderness lateral femoral epicondyle region",
+          "Hip control/endurance associations"
         ]
       },
       {
-        "id": "pes_insertion_pattern",
-        "name": "Medial insertion irritation (pes region)",
-        "primary_feature": "medial_insertion_pes",
-        "required_any": ["medial_insertion_pes"],
-        "core": {"medial_insertion_pes": 1.0},
-        "supporting": {},
-        "exclusion": {},
+        "id": "pes_medial_load",
+        "name": "Medial proximal tibia load pattern (pes anserine-type mechanics)",
+        "primary_feature": "medial_pes_load",
+        "required_any": ["medial_pes_load"],
+        "core": { "medial_pes_load": 1.2 },
+        "supporting": { "foot_pronation_bias": 0.3, "tibiofemoral_compression_degeneration": 0.2 },
+        "exclusion": { "tibiofemoral_shear_rotation": 0.2 },
         "differentiators": [
-          "Localised pain below medial joint line supports pes region irritation."
+          "Point tenderness 2–5 cm below medial joint line",
+          "Pain with resisted knee flexion or stairs",
+          "Load distribution/foot mechanics modifiers"
         ]
       },
       {
-        "id": "medial_compartment_bias",
-        "name": "Medial compartment compression bias",
-        "primary_feature": "medial_compartment_compression",
-        "required_any": ["medial_compartment_compression"],
-        "core": {"medial_compartment_compression": 1.0},
-        "supporting": {"load_endurance_deficit": 0.25, "foot_load_bias": 0.20},
-        "exclusion": {"tendon_tensile_overload_patellar": 0.20},
+        "id": "ligament_instability_screen",
+        "name": "Instability-dominant pattern (ligament screening)",
+        "primary_feature": "ligamentous_instability",
+        "required_any": ["ligamentous_instability"],
+        "core": { "ligamentous_instability": 1.2 },
+        "supporting": { "tibiofemoral_shear_rotation": 0.4 },
+        "exclusion": { "tibiofemoral_compression_degeneration": 0.2 },
         "differentiators": [
-          "Medial pain worse with longer walks/standing suggests medial load bias.",
-          "If twisting/catching dominates, consider rotation/shear screening."
-        ]
-      },
-      {
-        "id": "terminal_extension_pattern",
-        "name": "Terminal extension intolerance pattern",
-        "primary_feature": "terminal_extension_intolerance",
-        "required_any": ["terminal_extension_intolerance"],
-        "core": {"terminal_extension_intolerance": 1.0},
-        "supporting": {"high_irritability": 0.20},
-        "exclusion": {},
-        "differentiators": [
-          "Worse when standing with knee locked out; relieved by slight flexion supports extension intolerance."
-        ]
-      },
-      {
-        "id": "load_endurance_pattern",
-        "name": "Load endurance deficit pattern",
-        "primary_feature": "load_endurance_deficit",
-        "required_any": ["load_endurance_deficit"],
-        "core": {"load_endurance_deficit": 1.0},
-        "supporting": {"high_irritability": 0.15},
-        "exclusion": {},
-        "differentiators": [
-          "Symptoms build with duration/volume rather than peak effort.",
-          "If pain is immediate with jumping or squatting, tendon/compression patterns may dominate."
-        ]
-      },
-      {
-        "id": "post_injury_irritability_pattern",
-        "name": "Post-injury irritability pattern",
-        "primary_feature": "post_injury_irritability",
-        "required_any": ["post_injury_irritability"],
-        "core": {"post_injury_irritability": 1.0},
-        "supporting": {"high_irritability": 0.35},
-        "exclusion": {},
-        "differentiators": [
-          "Recent injury + broad sensitivity + swelling history supports post-injury irritability.",
-          "This pattern often co-exists with rotation/shear features; prioritise safety if worsening."
+          "True giving way with loss of confidence",
+          "Immediate effusion after injury",
+          "Mechanism: pop/hyperextension/pivot"
         ]
       }
     ],
@@ -263,214 +331,77 @@
     "contributors": [
       {
         "id": "hip_control_contributor",
-        "name": "Likely contributor: reduced hip/pelvic control",
-        "primary_feature": "proximal_control_deficit_hip",
-        "required_any": ["proximal_control_deficit_hip"],
-        "core": {"proximal_control_deficit_hip": 1.0},
-        "supporting": {"hip_internal_rotation_bias": 0.25},
-        "exclusion": {},
-        "differentiators": [
-          "If pain increases with single-leg tasks and fatigue, hip control contribution is more likely."
-        ]
+        "name": "Hip control contributor (dynamic valgus / femoral IR)",
+        "primary_feature": "hip_adduction_internal_rotation",
+        "required_any": ["hip_adduction_internal_rotation"],
+        "core": { "hip_adduction_internal_rotation": 1.2 },
+        "supporting": { "patellofemoral_compression": 0.3, "lateral_friction_itb": 0.3 },
+        "exclusion": {}
       },
       {
-        "id": "hip_ir_bias_contributor",
-        "name": "Likely contributor: hip IR/adduction bias",
-        "primary_feature": "hip_internal_rotation_bias",
-        "required_any": ["hip_internal_rotation_bias"],
-        "core": {"hip_internal_rotation_bias": 1.0},
-        "supporting": {"proximal_control_deficit_hip": 0.25},
-        "exclusion": {},
-        "differentiators": [
-          "If knee caves inward during squats/steps, IR/adduction bias may be contributing."
-        ]
+        "id": "ankle_df_limit_contributor",
+        "name": "Ankle dorsiflexion restriction contributor",
+        "primary_feature": "ankle_dorsiflexion_limit",
+        "required_any": ["ankle_dorsiflexion_limit"],
+        "core": { "ankle_dorsiflexion_limit": 1.2 },
+        "supporting": { "patellofemoral_compression": 0.3, "anterior_knee_tensile_load": 0.3 },
+        "exclusion": {}
       },
       {
-        "id": "ankle_df_contributor",
-        "name": "Likely contributor: limited ankle dorsiflexion",
-        "primary_feature": "ankle_dorsiflexion_restriction",
-        "required_any": ["ankle_dorsiflexion_restriction"],
-        "core": {"ankle_dorsiflexion_restriction": 1.0},
-        "supporting": {},
-        "exclusion": {},
-        "differentiators": [
-          "If squat/step pain improves when heels are elevated, ankle dorsiflexion restriction may be contributing."
-        ]
-      },
-      {
-        "id": "foot_load_bias_contributor",
-        "name": "Likely contributor: foot load bias",
-        "primary_feature": "foot_load_bias",
-        "required_any": ["foot_load_bias"],
-        "core": {"foot_load_bias": 1.0},
-        "supporting": {},
-        "exclusion": {},
-        "differentiators": [
-          "If symptoms change with footwear or surface, foot load bias may be contributing."
-        ]
+        "id": "foot_pronation_contributor",
+        "name": "Foot pronation / tibial rotation contributor",
+        "primary_feature": "foot_pronation_bias",
+        "required_any": ["foot_pronation_bias"],
+        "core": { "foot_pronation_bias": 1.2 },
+        "supporting": { "medial_pes_load": 0.3, "patellofemoral_compression": 0.2 },
+        "exclusion": {}
       }
     ]
   },
 
-  "questions": [
-    {
-      "id": "pain_map",
-      "question": "Point with one finger: where is the pain most localised?",
-      "type": "single_choice",
-      "answers": {
-        "Below the kneecap (patellar tendon area)": {"tendon_tensile_overload_patellar": 1.0},
-        "Above the kneecap (quad tendon area)": {"tendon_tensile_overload_quad": 1.0},
-        "Around/behind the kneecap (diffuse)": {"pfj_compression_intolerance": 1.0},
-        "Medial joint line (inside joint line)": {"rotation_shear_sensitivity": 0.7, "medial_compartment_compression": 0.6, "degenerative_joint_pattern": 0.4},
-        "Lateral joint line (outside joint line)": {"rotation_shear_sensitivity": 0.6, "degenerative_joint_pattern": 0.3},
-        "Outside knee/lateral side (ITB region)": {"lateral_friction_pattern_itb": 1.0},
-        "Inner knee below joint line (pes region)": {"medial_insertion_pes": 1.0}
-      }
+  "tissue_mapping": {
+    "anterior_knee_tensile_load": {
+      "likely_structures": ["Patellar tendon", "Quadriceps tendon", "Inferior pole patella (enthesis)"],
+      "common_labels": ["Patellar tendinopathy", "Quadriceps tendinopathy", "Anterior knee overload"]
     },
-    {
-      "id": "injury_onset",
-      "question": "How did it start?",
-      "type": "single_choice",
-      "answers": {
-        "No injury / gradual": {},
-        "Clear twist/pivot event": {"rotation_shear_sensitivity": 1.0, "post_injury_irritability": 0.4},
-        "Direct blow / awkward landing": {"rotation_shear_sensitivity": 0.6, "post_injury_irritability": 0.5}
-      }
+    "patellofemoral_compression": {
+      "likely_structures": ["Patellofemoral joint surfaces", "Retinaculum", "Patellar tracking/constraints"],
+      "common_labels": ["Patellofemoral pain syndrome", "Anterior knee pain (PFJ loading)"]
     },
-    {
-      "id": "swelling_timing",
-      "question": "Swelling timing (if any)?",
-      "type": "single_choice",
-      "answers": {
-        "None": {},
-        "Later that day / next day": {"rotation_shear_sensitivity": 0.5, "degenerative_joint_pattern": 0.3, "post_injury_irritability": 0.4},
-        "Immediate (within a few hours)": {"rotation_shear_sensitivity": 0.9, "high_irritability": 0.6, "post_injury_irritability": 0.7}
-      }
+    "tibiofemoral_shear_rotation": {
+      "likely_structures": ["Meniscus (medial/lateral)", "Capsule", "Articular surfaces under torsion"],
+      "common_labels": ["Meniscal-type mechanics", "Rotational knee pain"]
     },
-    {
-      "id": "aggravators",
-      "question": "Which activities provoke symptoms most?",
-      "type": "multi_choice",
-      "answers": {
-        "Stairs/downhill": {"pfj_compression_intolerance": 0.8, "degenerative_joint_pattern": 0.4, "medial_compartment_compression": 0.4},
-        "Prolonged sitting then standing": {"pfj_compression_intolerance": 0.9},
-        "Jumping/plyometrics": {"tendon_tensile_overload_patellar": 0.9, "tendon_tensile_overload_quad": 0.7},
-        "Running (especially downhill)": {"lateral_friction_pattern_itb": 0.8, "pfj_compression_intolerance": 0.4},
-        "Twisting/pivoting": {"rotation_shear_sensitivity": 0.9},
-        "Long walk/standing (builds over time)": {"load_endurance_deficit": 0.9, "medial_compartment_compression": 0.5},
-        "Standing with knee locked out": {"terminal_extension_intolerance": 1.0}
-      }
+    "tibiofemoral_compression_degeneration": {
+      "likely_structures": ["Tibiofemoral joint cartilage", "Subchondral bone", "Synovium (reactive)"],
+      "common_labels": ["Knee osteoarthritis-type mechanics", "Compression-dominant knee pain"]
     },
-    {
-      "id": "true_locking",
-      "question": "Do you get true locking (cannot fully straighten the knee)?",
-      "type": "single_choice",
-      "answers": {
-        "No": {},
-        "Catching but can straighten": {"rotation_shear_sensitivity": 0.6},
-        "Yes (cannot fully straighten/extend)": {"rotation_shear_sensitivity": 1.0, "high_irritability": 0.7}
-      }
+    "lateral_friction_itb": {
+      "likely_structures": ["Iliotibial band region", "Lateral femoral epicondyle interface"],
+      "common_labels": ["ITB syndrome-type mechanics", "Lateral running-related knee pain"]
     },
-    {
-      "id": "volume_vs_peak",
-      "question": "Is it worse with volume/duration or peak effort?",
-      "type": "single_choice",
-      "answers": {
-        "Mostly builds with duration/volume": {"load_endurance_deficit": 1.0},
-        "Mostly immediate with peak load (jump/sprint/effort)": {"tendon_tensile_overload_patellar": 0.6, "tendon_tensile_overload_quad": 0.5},
-        "Both equally": {"load_endurance_deficit": 0.6, "high_irritability": 0.25}
-      }
+    "medial_pes_load": {
+      "likely_structures": ["Pes anserine tendons (sartorius/gracilis/semitendinosus)", "Pes bursa"],
+      "common_labels": ["Pes anserine tendinopathy/bursitis-type mechanics"]
     },
-
-    {
-      "id": "hip_single_leg",
-      "question": "Do single-leg tasks (step-down, single-leg squat) make it worse or feel unstable?",
-      "type": "single_choice",
-      "answers": {
-        "No": {},
-        "Yes, it gets worse / feels unstable": {"proximal_control_deficit_hip": 1.0, "hip_internal_rotation_bias": 0.4}
-      }
-    },
-    {
-      "id": "knee_caves_in",
-      "question": "When doing stairs/squats, does the knee tend to cave inward?",
-      "type": "single_choice",
-      "answers": {
-        "No / unsure": {},
-        "Yes": {"hip_internal_rotation_bias": 1.0, "proximal_control_deficit_hip": 0.5}
-      }
-    },
-    {
-      "id": "ankle_tight_squat",
-      "question": "Do you feel ankle tightness, or do heels lift early during squats?",
-      "type": "single_choice",
-      "answers": {
-        "No / unsure": {},
-        "Yes": {"ankle_dorsiflexion_restriction": 1.0}
-      }
-    },
-    {
-      "id": "footwear_surface",
-      "question": "Do symptoms change noticeably with different shoes or surfaces?",
-      "type": "single_choice",
-      "answers": {
-        "No / unsure": {},
-        "Yes": {"foot_load_bias": 1.0}
-      }
-    },
-
-    {
-      "id": "warm_up",
-      "question": "How does it behave as you keep moving?",
-      "type": "single_choice",
-      "clinician_only": true,
-      "answers": {
-        "Improves as I warm up": {"tendon_tensile_overload_patellar": 0.6, "tendon_tensile_overload_quad": 0.6},
-        "No change": {},
-        "Worsens the longer I go": {"degenerative_joint_pattern": 0.6, "load_endurance_deficit": 0.4, "high_irritability": 0.3}
-      }
-    },
-    {
-      "id": "morning_stiffness",
-      "question": "Morning stiffness?",
-      "type": "single_choice",
-      "clinician_only": true,
-      "answers": {
-        "None": {},
-        "A bit, eases quickly": {"degenerative_joint_pattern": 0.3},
-        "More than 30 minutes": {"degenerative_joint_pattern": 1.0, "high_irritability": 0.2}
-      }
-    },
-    {
-      "id": "crepitus",
-      "question": "Do you notice grinding/creaking or a 'stiff joint' feeling?",
-      "type": "single_choice",
-      "clinician_only": true,
-      "answers": {
-        "No": {},
-        "Sometimes": {"degenerative_joint_pattern": 0.5},
-        "Often": {"degenerative_joint_pattern": 0.9}
-      }
-    },
-
-    {
-      "id": "weight_bearing",
-      "question": "Can you weight-bear normally on the leg?",
-      "type": "single_choice",
-      "answers": {
-        "Yes": {},
-        "Painful but I can": {"high_irritability": 0.3},
-        "Unable to weight bear": {"high_irritability": 1.0}
-      }
-    },
-    {
-      "id": "systemic_red_flags",
-      "question": "Any of these? (fever/unwell OR hot red swollen joint)",
-      "type": "single_choice",
-      "answers": {
-        "No": {},
-        "Fever/unwell OR hot red swollen joint": {"high_irritability": 1.0}
-      }
+    "ligamentous_instability": {
+      "likely_structures": ["ACL/PCL screening", "Secondary stabilizers"],
+      "common_labels": ["Instability-dominant knee pattern (screening)"]
     }
-  ]
+  },
+
+  "contributor_mapping": {
+    "hip_adduction_internal_rotation": {
+      "likely_contributors": ["Hip abductor endurance", "External rotator control", "Dynamic valgus mechanics"],
+      "why_it_matters": "Poor hip control can increase dynamic valgus and femoral IR, amplifying PFJ compression and lateral/medial overload."
+    },
+    "ankle_dorsiflexion_limit": {
+      "likely_contributors": ["Calf/soleus stiffness", "Anterior ankle restriction", "Compensatory pronation"],
+      "why_it_matters": "Limited dorsiflexion can increase knee flexion demands and change squat/step mechanics, amplifying PFJ and tendon loading."
+    },
+    "foot_pronation_bias": {
+      "likely_contributors": ["Foot pronation/tibial rotation coupling", "Footwear effects", "Arch control"],
+      "why_it_matters": "A pronation bias can alter tibial rotation and valgus mechanics, contributing to medial/pes and PFJ load patterns."
+    }
+  }
 }
