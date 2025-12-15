@@ -1,4 +1,14 @@
+import sys
+from pathlib import Path
 import streamlit as st
+
+# -------------------------------------------------
+# Ensure local imports always work (Streamlit-safe)
+# -------------------------------------------------
+ROOT = Path(__file__).resolve().parent
+if str(ROOT) not in sys.path:
+    sys.path.append(str(ROOT))
+
 from utils.loaders import load_json
 from engine.mechanics import (
     build_feature_vector,
@@ -8,47 +18,62 @@ from engine.mechanics import (
     pattern_strength
 )
 
-def collect_triggers(module, answers_log):
-    hits = []
-    for rf in module.get("red_flags", []):
-        trig = rf.get("trigger", {})
-        qid = trig.get("question_id")
-        ans = trig.get("answer")
-        if qid in answers_log and ans in answers_log[qid]:
-            hits.append(rf)
-    return hits
+# -------------------------------------------------
+# Helper: merge two biomechanical modules safely
+# -------------------------------------------------
+def merge_modules(base, addendum):
+    # Merge questions
+    base["questions"].extend(addendum.get("questions", []))
 
-def collect_contradictions(module, answers_log):
-    issues = []
-    for rule in module.get("contradiction_rules", []):
-        cond = rule.get("if", {})
-        qid = cond.get("question_id")
-        ans = cond.get("answer")
-        if qid in answers_log and ans in answers_log[qid]:
-            for conflict in rule.get("conflicts_with", []):
-                cqid = conflict.get("question_id")
-                cans = conflict.get("answer")
-                if cqid in answers_log and cans in answers_log[cqid]:
-                    issues.append(rule.get("message", "Some answers conflict."))
-                    break
-    return list(set(issues))
+    # Merge mechanical features
+    base["mechanical_features"].update(
+        addendum.get("mechanical_features", {})
+    )
 
-st.set_page_config(page_title="Knee Biomechanics Assistant", layout="centered")
+    # Merge contributor mappings
+    base.setdefault("contributor_mapping", {}).update(
+        addendum.get("contributor_mapping", {})
+    )
+
+    return base
+
+# -------------------------------------------------
+# App config
+# -------------------------------------------------
+st.set_page_config(
+    page_title="Knee Biomechanics Assistant",
+    layout="centered"
+)
+
 st.title("Knee Biomechanics Assistant")
-st.caption("Biomechanics-first reasoning • knee patterns + hip/ankle/foot contributors")
+st.caption("Mechanics-first reasoning • knee patterns with hip & ankle contributors")
 
 mode = st.radio("Mode:", ["Patient", "Clinician"], horizontal=True)
-clinician_mode = (mode == "Clinician")
+clinician_mode = mode == "Clinician"
+
 if clinician_mode:
-    st.info("Clinician mode enabled — additional probing shown.")
+    st.info("Clinician mode enabled — advanced probing active.")
 
-module = load_json("modules/knee_mechanics.json")
+# -------------------------------------------------
+# Load & compose modules
+# -------------------------------------------------
+knee_module = load_json("modules/knee_mechanics.json")
+cross_joint = load_json("modules/knee_cross_joint_addendum.json")
 
+module = merge_modules(knee_module, cross_joint)
+
+# -------------------------------------------------
+# Initialise state
+# -------------------------------------------------
 feature_names = list(module["mechanical_features"].keys())
 patient_vec = build_feature_vector(feature_names)
 answers_log = {}
 
-st.header("Questions")
+# -------------------------------------------------
+# Questionnaire
+# -------------------------------------------------
+st.header("Assessment Questions")
+
 for q in module["questions"]:
     if q.get("clinician_only", False) and not clinician_mode:
         continue
@@ -68,54 +93,41 @@ for q in module["questions"]:
         for a in selected:
             add_feature_updates(patient_vec, q["answers"].get(a, {}))
 
-st.header("Safety & Consistency")
-contr = collect_contradictions(module, answers_log)
-for m in contr:
-    st.warning(m)
+# -------------------------------------------------
+# Scoring
+# -------------------------------------------------
+primary_scores, contributor_scores = score_primary_and_contributors(
+    module,
+    patient_vec
+)
 
-rf = collect_triggers(module, answers_log)
-urgent = [x for x in rf if x.get("severity") == "urgent"]
-priority = [x for x in rf if x.get("severity") == "priority"]
-if urgent:
-    st.error("⚠️ Red flags (urgent):\n\n" + "\n".join([f"• {x.get('message','')}" for x in urgent]))
-if priority:
-    st.warning("⚠️ Red flags (priority):\n\n" + "\n".join([f"• {x.get('message','')}" for x in priority]))
-
-primary_scores, contributor_scores = score_primary_and_contributors(module, patient_vec)
 primary, secondary = select_dominant(primary_scores, ratio=0.75, max_items=3)
 contrib, contrib_secondary = select_dominant(contributor_scores, ratio=0.70, max_items=3)
 
-st.header("Biomechanics Summary")
+# -------------------------------------------------
+# Output
+# -------------------------------------------------
+st.header("Biomechanical Summary")
 
 if not primary:
-    st.info("Not enough information to identify a dominant mechanical knee pattern.")
+    st.info("Insufficient signal to identify a dominant knee pattern.")
 else:
     st.subheader("Dominant knee mechanical pattern")
     st.write(f"**{primary.name}**")
     st.write(pattern_strength(primary_scores))
 
-    if primary.primary_feature:
-        mapping = module.get("tissue_mapping", {}).get(primary.primary_feature, {})
-        if mapping:
-            st.markdown("**Likely structures involved**")
-            for s in mapping.get("likely_structures", []):
-                st.write(f"• {s}")
-            st.markdown("**Common clinical labels**")
-            for lbl in mapping.get("common_labels", []):
-                st.write(f"• {lbl}")
-
-    if secondary:
-        st.subheader("Other plausible knee patterns")
-        for s in secondary:
-            st.write(f"• {s.name}")
-
-    st.subheader("Likely contributing mechanics (hip / ankle / foot)")
-    if contrib and contrib.score > 0:
+    # Contributors
+    st.subheader("Likely contributing mechanics (upstream / downstream)")
+    if contrib:
         st.write(f"**{contrib.name}**")
-        cmap = module.get("contributor_mapping", {}).get(contrib.primary_feature, {})
+
+        cmap = module.get("contributor_mapping", {}).get(
+            contrib.primary_feature, {}
+        )
         if cmap:
             st.markdown("**Why it matters**")
             st.write(cmap.get("why_it_matters", ""))
+
             st.markdown("**Likely contributors**")
             for c in cmap.get("likely_contributors", []):
                 st.write(f"• {c}")
@@ -125,16 +137,25 @@ else:
             for c in contrib_secondary:
                 st.write(f"• {c.name}")
     else:
-        st.write("• No strong contributors identified from this questionnaire.")
+        st.write("No strong hip or ankle contributors identified.")
 
+    # Clinician prompts
     if clinician_mode:
-        st.subheader("What would help differentiate further (clinician prompt)")
-        patt = next((p for p in module["patterns"]["primary"] if p["id"] == primary.pattern_id), None)
+        st.subheader("What would help differentiate further")
+        patt = next(
+            (p for p in module["patterns"]["primary"]
+             if p["id"] == primary.pattern_id),
+            None
+        )
         if patt:
             for d in patt.get("differentiators", []):
                 st.write(f"• {d}")
 
+# -------------------------------------------------
+# Footer
+# -------------------------------------------------
 st.info(
-    "This tool supports biomechanics-based reasoning and self-management guidance. "
-    "It does not provide a medical diagnosis. Seek professional assessment if symptoms are severe, worsening, or red flags are present."
+    "This tool supports biomechanical reasoning and guided self-management. "
+    "It does not provide a medical diagnosis. Seek professional assessment "
+    "if symptoms are severe, progressive, or concerning."
 )
