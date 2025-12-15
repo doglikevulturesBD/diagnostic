@@ -9,6 +9,7 @@ class PatternScore:
     name: str
     score: float
     matched_features: List[Tuple[str, float]]
+    primary_feature: str | None = None
 
 
 def build_feature_vector(feature_names: List[str]) -> Dict[str, float]:
@@ -22,7 +23,6 @@ def add_feature_updates(vec: Dict[str, float], updates: Dict[str, float]) -> Non
 
 
 def cosine_similarity(a: Dict[str, float], b: Dict[str, float]) -> float:
-    # cosine sim on sparse dicts
     dot = 0.0
     na = 0.0
     nb = 0.0
@@ -45,7 +45,6 @@ def pattern_vector(pattern: dict, feature_names: List[str]) -> Dict[str, float]:
     for k, w in (pattern.get("supporting", {}) or {}).items():
         if k in v:
             v[k] += float(w)
-    # exclusion is handled separately as penalty
     return v
 
 
@@ -61,15 +60,14 @@ def exclusion_penalty(pattern: dict, patient_vec: Dict[str, float]) -> float:
     for feat, w in (pattern.get("exclusion", {}) or {}).items():
         if patient_vec.get(feat, 0.0) > 0:
             pen += float(w)
-    # clamp to keep sane
     return min(pen, 0.8)
 
 
-def score_patterns(module: dict, patient_vec: Dict[str, float]) -> List[PatternScore]:
+def score_pattern_list(module: dict, patient_vec: Dict[str, float], patterns: List[dict]) -> List[PatternScore]:
     feats = list(module["mechanical_features"].keys())
     out: List[PatternScore] = []
 
-    for p in module.get("patterns", []):
+    for p in patterns:
         if not passes_required_any(p, patient_vec):
             continue
 
@@ -80,10 +78,11 @@ def score_patterns(module: dict, patient_vec: Dict[str, float]) -> List[PatternS
 
         matched = [(f, patient_vec.get(f, 0.0)) for f in feats if patient_vec.get(f, 0.0) > 0]
         out.append(PatternScore(
-            pattern_id=p["id"],
-            name=p["name"],
+            pattern_id=p.get("id", ""),
+            name=p.get("name", ""),
             score=final,
-            matched_features=matched
+            matched_features=matched,
+            primary_feature=p.get("primary_feature")
         ))
 
     out.sort(key=lambda x: -x.score)
@@ -114,3 +113,14 @@ def pattern_strength(scores: List[PatternScore]) -> str:
     if top >= 0.40 and gap >= 0.10:
         return "Pattern strength: Moderate"
     return "Pattern strength: Overlapping / broad differential"
+
+
+def score_primary_and_contributors(module: dict, patient_vec: Dict[str, float]) -> Tuple[List[PatternScore], List[PatternScore]]:
+    patterns = module.get("patterns", {})
+    primary_list = patterns.get("primary", []) or []
+    contributor_list = patterns.get("contributors", []) or []
+
+    primary_scores = score_pattern_list(module, patient_vec, primary_list)
+    contributor_scores = score_pattern_list(module, patient_vec, contributor_list)
+
+    return primary_scores, contributor_scores
