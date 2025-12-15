@@ -1,0 +1,313 @@
+{
+  "body_part": "Knee",
+
+  "mechanical_features": {
+    "pfj_compression_intolerance": "Patellofemoral compression intolerance (knee flexion load)",
+    "tendon_tensile_overload_patellar": "Patellar tendon tensile overload",
+    "tendon_tensile_overload_quad": "Quadriceps tendon tensile overload",
+    "rotation_shear_sensitivity": "Rotation/shear sensitivity (meniscus/ligament irritability pattern)",
+    "lateral_friction_pattern_itb": "Lateral friction pattern (ITB-related)",
+    "degenerative_joint_pattern": "Degenerative joint pattern (stiffness/crepitus/age-context)",
+    "medial_insertion_pes": "Medial insertion irritation (pes anserine region)",
+    "high_irritability": "High irritability / sensitised state (limits self-management)"
+  },
+
+  "tissue_mapping": {
+    "pfj_compression_intolerance": {
+      "likely_structures": ["Patellofemoral joint", "Retinaculum", "Peripatellar soft tissues"],
+      "common_labels": ["Patellofemoral Pain Syndrome"]
+    },
+    "tendon_tensile_overload_patellar": {
+      "likely_structures": ["Patellar tendon", "Inferior pole patella"],
+      "common_labels": ["Patellar Tendinopathy"]
+    },
+    "tendon_tensile_overload_quad": {
+      "likely_structures": ["Quadriceps tendon", "Superior pole patella"],
+      "common_labels": ["Quadriceps Tendinopathy"]
+    },
+    "rotation_shear_sensitivity": {
+      "likely_structures": ["Meniscus", "Capsule", "Ligament irritation (screening)"],
+      "common_labels": ["Meniscal irritation/injury (screening)", "Internal derangement (screening)"]
+    },
+    "lateral_friction_pattern_itb": {
+      "likely_structures": ["Iliotibial band", "Lateral femoral condyle region"],
+      "common_labels": ["Iliotibial Band Syndrome"]
+    },
+    "degenerative_joint_pattern": {
+      "likely_structures": ["Tibiofemoral joint surfaces", "Synovium"],
+      "common_labels": ["Osteoarthritis pattern (clinical)"]
+    },
+    "medial_insertion_pes": {
+      "likely_structures": ["Pes anserine tendons/bursa"],
+      "common_labels": ["Pes Anserine Tendinopathy/Bursitis"]
+    }
+  },
+
+  "red_flags": [
+    {
+      "trigger": {"question_id": "systemic_red_flags", "answer": "Fever/unwell OR hot red swollen joint"},
+      "severity": "urgent",
+      "message": "Systemic symptoms with a hot/red/swollen joint can be concerning. Seek urgent medical assessment."
+    },
+    {
+      "trigger": {"question_id": "weight_bearing", "answer": "Unable to weight bear"},
+      "severity": "urgent",
+      "message": "Inability to weight bear after injury may need urgent assessment or imaging."
+    },
+    {
+      "trigger": {"question_id": "true_locking", "answer": "Yes (cannot fully straighten/extend)"},
+      "severity": "urgent",
+      "message": "True locking can indicate a mechanical block. Consider urgent in-person assessment."
+    }
+  ],
+
+  "contradiction_rules": [
+    {
+      "id": "no_injury_but_immediate_swelling",
+      "if": {"question_id": "injury_onset", "answer": "No injury / gradual"},
+      "conflicts_with": [{"question_id": "swelling_timing", "answer": "Immediate (within a few hours)"}],
+      "message": "You selected gradual/no injury but also immediate swelling. Please double-check."
+    }
+  ],
+
+  "patterns": [
+    {
+      "id": "pfj_compression_pattern",
+      "name": "Anterior knee compression pattern",
+      "primary_feature": "pfj_compression_intolerance",
+      "required_any": ["pfj_compression_intolerance"],
+      "core": {
+        "pfj_compression_intolerance": 1.0
+      },
+      "supporting": {
+        "high_irritability": 0.4
+      },
+      "exclusion": {
+        "rotation_shear_sensitivity": 0.3
+      },
+      "differentiators": [
+        "If pain is very focal below the kneecap and provoked by jumping, consider patellar tendon overload.",
+        "If mechanical locking/catching dominates, consider rotation/shear pattern screening."
+      ]
+    },
+    {
+      "id": "patellar_tendon_overload",
+      "name": "Patellar tendon overload pattern",
+      "primary_feature": "tendon_tensile_overload_patellar",
+      "required_any": ["tendon_tensile_overload_patellar"],
+      "core": {
+        "tendon_tensile_overload_patellar": 1.0
+      },
+      "supporting": {
+        "pfj_compression_intolerance": 0.35
+      },
+      "exclusion": {
+        "degenerative_joint_pattern": 0.25
+      },
+      "differentiators": [
+        "If pain is mainly diffuse around/behind kneecap and worse with sitting/stairs, consider compression pattern.",
+        "If pain is clearly above the kneecap, consider quadriceps tendon overload."
+      ]
+    },
+    {
+      "id": "quad_tendon_overload",
+      "name": "Quadriceps tendon overload pattern",
+      "primary_feature": "tendon_tensile_overload_quad",
+      "required_any": ["tendon_tensile_overload_quad"],
+      "core": {
+        "tendon_tensile_overload_quad": 1.0
+      },
+      "supporting": {
+        "pfj_compression_intolerance": 0.25
+      },
+      "exclusion": {
+        "tendon_tensile_overload_patellar": 0.30
+      },
+      "differentiators": [
+        "This pattern is unlikely unless pain is clearly above the kneecap at the quad tendon insertion.",
+        "If pain is below the kneecap, patellar tendon overload is more consistent."
+      ]
+    },
+    {
+      "id": "rotation_shear_pattern",
+      "name": "Rotation/shear irritation pattern (screening)",
+      "primary_feature": "rotation_shear_sensitivity",
+      "required_any": ["rotation_shear_sensitivity"],
+      "core": {
+        "rotation_shear_sensitivity": 1.0
+      },
+      "supporting": {
+        "high_irritability": 0.4
+      },
+      "exclusion": {
+        "tendon_tensile_overload_patellar": 0.2,
+        "tendon_tensile_overload_quad": 0.2
+      },
+      "differentiators": [
+        "True locking or inability to fully extend increases urgency.",
+        "If symptoms are purely load-related without twisting/catching, consider tendon/compression patterns."
+      ]
+    },
+    {
+      "id": "itb_friction_pattern",
+      "name": "Lateral friction pattern (ITB-like)",
+      "primary_feature": "lateral_friction_pattern_itb",
+      "required_any": ["lateral_friction_pattern_itb"],
+      "core": {
+        "lateral_friction_pattern_itb": 1.0
+      },
+      "supporting": {},
+      "exclusion": {
+        "rotation_shear_sensitivity": 0.2
+      },
+      "differentiators": [
+        "If pain is deep inside the joint with twisting/catching, consider rotation/shear pattern screening."
+      ]
+    },
+    {
+      "id": "degenerative_joint_pattern",
+      "name": "Degenerative joint pattern (OA-like)",
+      "primary_feature": "degenerative_joint_pattern",
+      "required_any": ["degenerative_joint_pattern"],
+      "core": {
+        "degenerative_joint_pattern": 1.0
+      },
+      "supporting": {
+        "high_irritability": 0.25
+      },
+      "exclusion": {
+        "tendon_tensile_overload_patellar": 0.2,
+        "tendon_tensile_overload_quad": 0.2
+      },
+      "differentiators": [
+        "Stiffness >30 minutes + crepitus + age-context strengthens this pattern.",
+        "If pain is sharply load-specific with warm-up effect, tendon overload may be more consistent."
+      ]
+    },
+    {
+      "id": "pes_insertion_pattern",
+      "name": "Medial insertion irritation (pes region)",
+      "primary_feature": "medial_insertion_pes",
+      "required_any": ["medial_insertion_pes"],
+      "core": {
+        "medial_insertion_pes": 1.0
+      },
+      "supporting": {},
+      "exclusion": {},
+      "differentiators": [
+        "If pain is at the joint line with twisting/catching, consider rotation/shear pattern screening."
+      ]
+    }
+  ],
+
+  "questions": [
+    {
+      "id": "pain_map",
+      "question": "Point with one finger: where is the pain most localised?",
+      "type": "single_choice",
+      "answers": {
+        "Below the kneecap (patellar tendon area)": {"tendon_tensile_overload_patellar": 1.0},
+        "Above the kneecap (quad tendon area)": {"tendon_tensile_overload_quad": 1.0},
+        "Around/behind the kneecap (diffuse)": {"pfj_compression_intolerance": 1.0},
+        "Medial joint line (inside joint line)": {"rotation_shear_sensitivity": 0.7, "degenerative_joint_pattern": 0.4},
+        "Lateral joint line (outside joint line)": {"rotation_shear_sensitivity": 0.6, "degenerative_joint_pattern": 0.3},
+        "Outside knee/lateral side (ITB region)": {"lateral_friction_pattern_itb": 1.0},
+        "Inner knee below joint line (pes region)": {"medial_insertion_pes": 1.0}
+      }
+    },
+    {
+      "id": "injury_onset",
+      "question": "How did it start?",
+      "type": "single_choice",
+      "answers": {
+        "No injury / gradual": {},
+        "Clear twist/pivot event": {"rotation_shear_sensitivity": 1.0},
+        "Direct blow / awkward landing": {"rotation_shear_sensitivity": 0.6}
+      }
+    },
+    {
+      "id": "swelling_timing",
+      "question": "Swelling timing (if any)?",
+      "type": "single_choice",
+      "answers": {
+        "None": {},
+        "Later that day / next day": {"rotation_shear_sensitivity": 0.5, "degenerative_joint_pattern": 0.3},
+        "Immediate (within a few hours)": {"rotation_shear_sensitivity": 0.9, "high_irritability": 0.6}
+      }
+    },
+    {
+      "id": "stair_sit",
+      "question": "What aggravates it most?",
+      "type": "multi_choice",
+      "answers": {
+        "Stairs/downhill": {"pfj_compression_intolerance": 0.8, "degenerative_joint_pattern": 0.4},
+        "Prolonged sitting then standing": {"pfj_compression_intolerance": 0.9},
+        "Jumping/plyometrics": {"tendon_tensile_overload_patellar": 0.9, "tendon_tensile_overload_quad": 0.7},
+        "Running (especially downhill)": {"lateral_friction_pattern_itb": 0.8, "pfj_compression_intolerance": 0.4},
+        "Twisting/pivoting": {"rotation_shear_sensitivity": 0.9}
+      }
+    },
+    {
+      "id": "true_locking",
+      "question": "Do you get true locking (cannot fully straighten the knee)?",
+      "type": "single_choice",
+      "answers": {
+        "No": {},
+        "Catching but can straighten": {"rotation_shear_sensitivity": 0.6},
+        "Yes (cannot fully straighten/extend)": {"rotation_shear_sensitivity": 1.0, "high_irritability": 0.7}
+      }
+    },
+    {
+      "id": "warm_up",
+      "question": "How does it behave as you keep moving?",
+      "type": "single_choice",
+      "clinician_only": true,
+      "answers": {
+        "Improves as I warm up": {"tendon_tensile_overload_patellar": 0.6, "tendon_tensile_overload_quad": 0.6},
+        "No change": {},
+        "Worsens the longer I go": {"degenerative_joint_pattern": 0.6, "high_irritability": 0.3}
+      }
+    },
+    {
+      "id": "morning_stiffness",
+      "question": "Morning stiffness?",
+      "type": "single_choice",
+      "clinician_only": true,
+      "answers": {
+        "None": {},
+        "A bit, eases quickly": {"degenerative_joint_pattern": 0.3},
+        "More than 30 minutes": {"degenerative_joint_pattern": 1.0, "high_irritability": 0.2}
+      }
+    },
+    {
+      "id": "crepitus",
+      "question": "Do you notice grinding/creaking or a 'stiff joint' feeling?",
+      "type": "single_choice",
+      "clinician_only": true,
+      "answers": {
+        "No": {},
+        "Sometimes": {"degenerative_joint_pattern": 0.5},
+        "Often": {"degenerative_joint_pattern": 0.9}
+      }
+    },
+    {
+      "id": "weight_bearing",
+      "question": "Can you weight-bear normally on the leg?",
+      "type": "single_choice",
+      "answers": {
+        "Yes": {},
+        "Painful but I can": {"high_irritability": 0.3},
+        "Unable to weight bear": {"high_irritability": 1.0}
+      }
+    },
+    {
+      "id": "systemic_red_flags",
+      "question": "Any of these? (fever/unwell OR hot red swollen joint)",
+      "type": "single_choice",
+      "answers": {
+        "No": {},
+        "Fever/unwell OR hot red swollen joint": {"high_irritability": 1.0}
+      }
+    }
+  ]
+}
