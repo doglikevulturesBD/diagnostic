@@ -3,7 +3,7 @@
 =========================================== */
 
 html, body, .stApp {
-    background-color: #F4F9FC !important;
+    background-color: #FFF1EA !important;
     color: #24323F !important;
     font-family: 'Segoe UI', system-ui, sans-serif;
 }
@@ -23,7 +23,7 @@ h1, h2, h3, h4, h5, h6, p, label, span {
     border-radius: 16px;
     padding: 30px 20px;
     margin-bottom: 30px;
-    border: 1px solid #CFE3F0;
+    border: 1px solid #E6F1F8;
 }
 
 .hero-title {
