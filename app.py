@@ -144,17 +144,17 @@ st.caption(
 probes = load_json("modules/exercise_probes.json")["exercise_probes"]
 
 for probe in probes:
-    if contrib and contrib.primary_feature in probe["targets"]:
-        st.subheader(probe["name"])
-        st.write(probe["instructions"])
+    st.subheader(probe["name"])
+    st.write(probe["instructions"])
 
-        response = st.radio(
-            "What best describes your experience?",
-            list(probe["responses"].keys()),
-            key=f"probe_{probe['id']}"
-        )
+    response = st.radio(
+        "What best describes your experience?",
+        list(probe["responses"].keys()),
+        key=f"probe_{probe['id']}"
+    )
 
-        add_feature_updates(patient_vec, probe["responses"][response])
+    add_feature_updates(patient_vec, probe["responses"][response])
+
 
 # -------------------------------------------------
 # Re-score AFTER probes
