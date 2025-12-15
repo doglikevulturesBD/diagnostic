@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Dict, List, Optional
 
+
 @dataclass
 class PatternScore:
     pattern_id: str
@@ -58,7 +59,12 @@ def exclusion_penalty(pattern: dict, patient_vec: Dict[str, float]) -> float:
     return min(penalty, 0.8)
 
 
-def score_group(module: dict, patient_vec: Dict[str, float], patterns: List[dict]) -> List[PatternScore]:
+def score_group(
+    module: dict,
+    patient_vec: Dict[str, float],
+    patterns: List[dict]
+) -> List[PatternScore]:
+
     features = list(module["mechanical_features"].keys())
     results: List[PatternScore] = []
 
@@ -71,12 +77,14 @@ def score_group(module: dict, patient_vec: Dict[str, float], patterns: List[dict
         pen = exclusion_penalty(p, patient_vec)
         score = max(0.0, sim * (1.0 - pen))
 
-        results.append(PatternScore(
-            pattern_id=p["id"],
-            name=p["name"],
-            score=score,
-            primary_feature=p.get("primary_feature")
-        ))
+        results.append(
+            PatternScore(
+                pattern_id=p["id"],
+                name=p["name"],
+                score=score,
+                primary_feature=p.get("primary_feature")
+            )
+        )
 
     results.sort(key=lambda x: -x.score)
     return results
@@ -88,11 +96,18 @@ def score_primary_and_contributors(module: dict, patient_vec: Dict[str, float]):
     return primary, contributors
 
 
-def select_dominant(scores: List[PatternScore], ratio: float, max_items: int):
+def select_dominant(
+    scores: List[PatternScore],
+    ratio: float,
+    max_items: int
+):
     if not scores:
         return None, []
     top = scores[0]
-    others = [s for s in scores[1:] if s.score >= ratio * top.score][:max_items]
+    others = [
+        s for s in scores[1:]
+        if s.score >= ratio * top.score
+    ][:max_items]
     return top, others
 
 
