@@ -19,11 +19,11 @@ h1, h2, h3, h4, h5, h6, p, label, span {
 
 .hero {
     width: 100%;
-    background: #E6F1F8;
+    background: #EEE8F6;
     border-radius: 16px;
     padding: 30px 20px;
     margin-bottom: 30px;
-    border: 1px solid #E6F1F8;
+    border: 1px solid #D6CAE8;
 }
 
 .hero-title {
