@@ -1,178 +1,18 @@
 import streamlit as st
+import sys
+import os
 
-from utils.loaders import load_json
-from engine.mechanics import (
-    build_feature_vector,
-    add_feature_updates,
-    score_primary_and_contributors,
-    select_dominant,
-    pattern_strength
-)
+st.write("Python executable:", sys.executable)
+st.write("Working directory:", os.getcwd())
+st.write("Files in cwd:", os.listdir())
 
+st.write("Engine exists:", os.path.exists("engine"))
+st.write("Engine contents:", os.listdir("engine") if os.path.exists("engine") else "NO ENGINE DIR")
 
-# ---------- Safety helpers ----------
+st.write("Utils exists:", os.path.exists("utils"))
+st.write("Utils contents:", os.listdir("utils") if os.path.exists("utils") else "NO UTILS DIR")
 
-def collect_triggers(module, answers_log):
-    hits = []
-    for rf in module.get("red_flags", []):
-        trig = rf.get("trigger", {})
-        qid = trig.get("question_id")
-        ans = trig.get("answer")
-        if qid in answers_log and ans in answers_log[qid]:
-            hits.append(rf)
-    return hits
+st.stop()
 
-
-def collect_contradictions(module, answers_log):
-    issues = []
-    for rule in module.get("contradiction_rules", []):
-        cond = rule.get("if", {})
-        qid = cond.get("question_id")
-        ans = cond.get("answer")
-        if qid in answers_log and ans in answers_log[qid]:
-            for conflict in rule.get("conflicts_with", []):
-                cqid = conflict.get("question_id")
-                cans = conflict.get("answer")
-                if cqid in answers_log and cans in answers_log[cqid]:
-                    issues.append(rule.get("message", "Some answers conflict."))
-                    break
-    return list(set(issues))
-
-
-# ---------- App UI ----------
-
-st.set_page_config(
-    page_title="Knee Mechanics Assistant",
-    layout="centered"
-)
-
-st.title("Knee Mechanics Assistant")
-st.caption("Mechanics-first reasoning • knee patterns with hip/ankle contributors")
-
-mode = st.radio("Mode:", ["Patient", "Clinician"], horizontal=True)
-clinician_mode = mode == "Clinician"
-if clinician_mode:
-    st.info("Clinician mode enabled — advanced probing shown.")
-
-# ---------- Load module ----------
-
-module = load_json("modules/knee_mechanics.json")
-
-feature_names = list(module["mechanical_features"].keys())
-patient_vec = build_feature_vector(feature_names)
-answers_log = {}
-
-# ---------- Questionnaire ----------
-
-st.header("Questions")
-
-for q in module["questions"]:
-    if q.get("clinician_only", False) and not clinician_mode:
-        continue
-
-    st.subheader(q["question"])
-    qid = q["id"]
-    answers_log[qid] = []
-
-    if q["type"] == "single_choice":
-        ans = st.radio("", list(q["answers"].keys()), key=qid)
-        answers_log[qid].append(ans)
-        add_feature_updates(patient_vec, q["answers"].get(ans, {}))
-
-    elif q["type"] == "multi_choice":
-        selected = st.multiselect("", list(q["answers"].keys()), key=qid)
-        answers_log[qid] = selected
-        for a in selected:
-            add_feature_updates(patient_vec, q["answers"].get(a, {}))
-
-# ---------- Safety checks ----------
-
-st.header("Safety & Consistency")
-
-contradictions = collect_contradictions(module, answers_log)
-for c in contradictions:
-    st.warning(c)
-
-red_flags = collect_triggers(module, answers_log)
-for rf in red_flags:
-    st.error(rf.get("message", "Red flag detected."))
-
-# ---------- Scoring ----------
-
-primary_scores, contributor_scores = score_primary_and_contributors(
-    module,
-    patient_vec
-)
-
-primary, secondary = select_dominant(primary_scores, ratio=0.75, max_items=3)
-contrib, contrib_secondary = select_dominant(contributor_scores, ratio=0.70, max_items=3)
-
-# ---------- Output ----------
-
-st.header("Mechanical Summary")
-
-if not primary:
-    st.info("Not enough information to identify a dominant knee mechanical pattern.")
-else:
-    st.subheader("Dominant knee mechanical pattern")
-    st.write(f"**{primary.name}**")
-    st.write(pattern_strength(primary_scores))
-
-    # Structures / labels
-    if primary.primary_feature:
-        mapping = module.get("tissue_mapping", {}).get(primary.primary_feature, {})
-        if mapping:
-            st.markdown("**Likely structures involved**")
-            for s in mapping.get("likely_structures", []):
-                st.write(f"• {s}")
-
-            st.markdown("**Common clinical labels**")
-            for lbl in mapping.get("common_labels", []):
-                st.write(f"• {lbl}")
-
-    # Secondary knee patterns
-    if secondary:
-        st.subheader("Other plausible knee patterns")
-        for s in secondary:
-            st.write(f"• {s.name}")
-
-    # Contributors
-    st.subheader("Likely contributing mechanics (hip / ankle / foot)")
-    if contrib:
-        st.write(f"**{contrib.name}**")
-
-        cmap = module.get("contributor_mapping", {}).get(contrib.primary_feature, {})
-        if cmap:
-            st.markdown("**Why it matters**")
-            st.write(cmap.get("why_it_matters", ""))
-
-            st.markdown("**Likely contributors**")
-            for c in cmap.get("likely_contributors", []):
-                st.write(f"• {c}")
-
-        if contrib_secondary:
-            st.markdown("**Other possible contributors**")
-            for c in contrib_secondary:
-                st.write(f"• {c.name}")
-    else:
-        st.write("No strong contributors identified from this questionnaire.")
-
-    # Clinician differentiators
-    if clinician_mode:
-        st.subheader("What would help differentiate further")
-        patt = next(
-            (p for p in module["patterns"]["primary"] if p["id"] == primary.pattern_id),
-            None
-        )
-        if patt:
-            for d in patt.get("differentiators", []):
-                st.write(f"• {d}")
-
-# ---------- Footer ----------
-
-st.info(
-    "This tool supports clinical reasoning and self-management guidance. "
-    "It does not provide a medical diagnosis. Seek professional assessment "
-    "if symptoms are severe, worsening, or red flags are present."
 )
 
