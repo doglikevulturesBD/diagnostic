@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 
 @dataclass
@@ -9,8 +9,6 @@ class PatternScore:
     score: float
     primary_feature: Optional[str]
 
-
-# ---------------- Feature handling ----------------
 
 def build_feature_vector(feature_names: List[str]) -> Dict[str, float]:
     return {f: 0.0 for f in feature_names}
@@ -22,8 +20,6 @@ def add_feature_updates(vec: Dict[str, float], updates: Dict[str, float]) -> Non
             vec[k] += float(v)
 
 
-# ---------------- Math ----------------
-
 def cosine_similarity(a: Dict[str, float], b: Dict[str, float]) -> float:
     dot = sum(a[k] * b.get(k, 0.0) for k in a)
     na = sum(v * v for v in a.values())
@@ -32,8 +28,6 @@ def cosine_similarity(a: Dict[str, float], b: Dict[str, float]) -> float:
         return 0.0
     return dot / ((na ** 0.5) * (nb ** 0.5))
 
-
-# ---------------- Pattern logic ----------------
 
 def pattern_vector(pattern: dict, features: List[str]) -> Dict[str, float]:
     vec = {f: 0.0 for f in features}
@@ -59,12 +53,7 @@ def exclusion_penalty(pattern: dict, patient_vec: Dict[str, float]) -> float:
     return min(penalty, 0.8)
 
 
-def score_group(
-    module: dict,
-    patient_vec: Dict[str, float],
-    patterns: List[dict]
-) -> List[PatternScore]:
-
+def score_group(module: dict, patient_vec: Dict[str, float], patterns: List[dict]) -> List[PatternScore]:
     features = list(module["mechanical_features"].keys())
     results: List[PatternScore] = []
 
@@ -77,14 +66,12 @@ def score_group(
         pen = exclusion_penalty(p, patient_vec)
         score = max(0.0, sim * (1.0 - pen))
 
-        results.append(
-            PatternScore(
-                pattern_id=p["id"],
-                name=p["name"],
-                score=score,
-                primary_feature=p.get("primary_feature")
-            )
-        )
+        results.append(PatternScore(
+            pattern_id=p["id"],
+            name=p["name"],
+            score=score,
+            primary_feature=p.get("primary_feature"),
+        ))
 
     results.sort(key=lambda x: -x.score)
     return results
@@ -96,27 +83,20 @@ def score_primary_and_contributors(module: dict, patient_vec: Dict[str, float]):
     return primary, contributors
 
 
-def select_dominant(
-    scores: List[PatternScore],
-    ratio: float,
-    max_items: int
-):
+def select_dominant(scores: List[PatternScore], ratio: float = 0.75, max_items: int = 3):
     if not scores:
         return None, []
     top = scores[0]
-    others = [
-        s for s in scores[1:]
-        if s.score >= ratio * top.score
-    ][:max_items]
+    others = [s for s in scores[1:] if s.score >= ratio * top.score][:max_items]
     return top, others
 
 
 def pattern_strength(scores: List[PatternScore]) -> str:
     if len(scores) < 2:
-        return "Pattern strength: Low"
+        return "Pattern strength: Low (limited differentiation)"
     gap = scores[0].score - scores[1].score
     if scores[0].score >= 0.55 and gap >= 0.15:
         return "Pattern strength: Strong"
     if scores[0].score >= 0.40 and gap >= 0.10:
         return "Pattern strength: Moderate"
-    return "Pattern strength: Overlapping"
+    return "Pattern strength: Overlapping / mixed"
