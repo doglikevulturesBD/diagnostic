@@ -1,0 +1,157 @@
+{
+  "module": "knee_cross_joint_addendum",
+
+  "mechanical_features": {
+    "hip_frontal_plane_control": { "description": "Ability to control femur/pelvis in single-leg stance" },
+    "hip_rotation_control": { "description": "Control of femoral internal/external rotation under load" },
+    "ankle_dorsiflexion_constraint": { "description": "Limited ankle range affecting squat/landing mechanics" },
+    "foot_load_bias": { "description": "Medial/lateral foot loading bias" },
+    "global_fatigue_control": { "description": "Loss of motor control under fatigue" }
+  },
+
+  "questions": [
+    {
+      "id": "single_vs_double_leg",
+      "question": "How does the pain compare during single-leg activities (stairs, running, hopping) versus double-leg activities?",
+      "type": "single_choice",
+      "answers": {
+        "Feels similar": {
+          "anterior_knee_compression": 0.4
+        },
+        "Feels much worse and harder to control": {
+          "hip_frontal_plane_control": 0.8,
+          "global_fatigue_control": 0.5
+        }
+      }
+    },
+
+    {
+      "id": "alignment_awareness",
+      "question": "When you are tired, do you notice changes in knee or leg alignment?",
+      "type": "single_choice",
+      "answers": {
+        "No noticeable change": {},
+        "Knee tends to drift inward or feels less controlled": {
+          "hip_frontal_plane_control": 0.9,
+          "hip_rotation_control": 0.6
+        }
+      }
+    },
+
+    {
+      "id": "fatigue_progression",
+      "question": "How does the pain behave as you get tired during activity?",
+      "type": "single_choice",
+      "answers": {
+        "Appears early and stays similar": {
+          "tensile_load_extensor": 0.4
+        },
+        "Builds gradually and worsens with fatigue": {
+          "global_fatigue_control": 0.8,
+          "hip_frontal_plane_control": 0.6
+        }
+      }
+    },
+
+    {
+      "id": "downhill_vs_uphill",
+      "question": "Which feels worse?",
+      "type": "single_choice",
+      "answers": {
+        "Downhill / stairs down": {
+          "ankle_dorsiflexion_constraint": 0.8,
+          "anterior_knee_compression": 0.5
+        },
+        "Uphill / stairs up": {
+          "tensile_load_extensor": 0.6
+        },
+        "About the same": {}
+      }
+    },
+
+    {
+      "id": "uneven_surface",
+      "question": "How does uneven ground affect your symptoms?",
+      "type": "single_choice",
+      "answers": {
+        "No major difference": {},
+        "Feels worse or less stable": {
+          "foot_load_bias": 0.8,
+          "ankle_dorsiflexion_constraint": 0.5
+        }
+      }
+    },
+
+    {
+      "id": "squat_depth_limit",
+      "question": "What limits you most during a deep squat?",
+      "type": "single_choice",
+      "answers": {
+        "Knee pain only": {
+          "anterior_knee_compression": 0.6
+        },
+        "Ankle tightness or heels lifting": {
+          "ankle_dorsiflexion_constraint": 0.9
+        },
+        "Loss of balance or control": {
+          "hip_frontal_plane_control": 0.7,
+          "global_fatigue_control": 0.6
+        }
+      }
+    },
+
+    {
+      "id": "speed_vs_control",
+      "question": "Which is more problematic?",
+      "type": "single_choice",
+      "answers": {
+        "Slow, controlled movements": {
+          "joint_degeneration_bias": 0.4
+        },
+        "Fast or reactive movements": {
+          "hip_rotation_control": 0.8,
+          "instability_control": 0.6
+        }
+      }
+    },
+
+    {
+      "id": "form_focus",
+      "question": "Do you need to consciously focus on your form to reduce pain?",
+      "type": "single_choice",
+      "answers": {
+        "No": {},
+        "Yes, especially when tired": {
+          "global_fatigue_control": 0.7,
+          "hip_frontal_plane_control": 0.5
+        }
+      }
+    }
+  ],
+
+  "contributor_mapping": {
+    "hip_frontal_plane_control": {
+      "likely_contributors": [
+        "Hip abductor endurance deficit",
+        "Pelvic control under single-leg load"
+      ],
+      "why_it_matters": "Poor frontal plane control increases valgus moments and knee joint stress during dynamic tasks."
+    },
+
+    "ankle_dorsiflexion_constraint": {
+      "likely_contributors": [
+        "Limited ankle dorsiflexion",
+        "Stiff calf–ankle complex"
+      ],
+      "why_it_matters": "Restricted ankle motion shifts load proximally, increasing knee compression and shear forces."
+    },
+
+    "foot_load_bias": {
+      "likely_contributors": [
+        "Excessive pronation or supination",
+        "Foot intrinsic control deficit"
+      ],
+      "why_it_matters": "Foot loading biases alter tibial rotation and knee joint alignment under load."
+    }
+  }
+}
