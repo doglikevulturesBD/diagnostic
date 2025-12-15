@@ -107,3 +107,37 @@ h1, h2, h3, h4, h5, h6, p, label, span {
     color: #6C7A86 !important;
 }
 
+/* ===========================================
+   DUSTY LAVENDER ACCENTS (SUBTLE)
+   Accent colour: #B8A6D9
+=========================================== */
+
+/* Section headings */
+.section-title,
+h2, h3 {
+    color: #B8A6D9 !important;
+}
+
+/* Result labels / emphasis text */
+.result-highlight {
+    color: #B8A6D9 !important;
+}
+
+/* Clinician emphasis */
+.info-tile strong {
+    color: #B8A6D9 !important;
+}
+
+/* Selected radio option indicator (subtle guide) */
+.stRadio div[aria-checked="true"] {
+    border-left: 4px solid #B8A6D9;
+    padding-left: 10px;
+}
+
+/* Soft divider lines (optional but elegant) */
+hr {
+    border: none;
+    height: 1px;
+    background-color: #B8A6D9;
+    opacity: 0.35;
+}
