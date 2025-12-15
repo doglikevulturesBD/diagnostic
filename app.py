@@ -2,13 +2,23 @@ import sys
 from pathlib import Path
 import streamlit as st
 
-
 # -------------------------------------------------
 # Ensure local imports always work (Streamlit-safe)
 # -------------------------------------------------
 ROOT = Path(__file__).resolve().parent
 if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))
+
+# -------------------------------------------------
+# Load custom CSS
+# -------------------------------------------------
+def load_css(file_name):
+    css_path = ROOT / file_name
+    if css_path.exists():
+        with open(css_path, "r") as f:
+            st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+load_css("style.css")
 
 from utils.loaders import load_json
 from engine.mechanics import (
@@ -20,19 +30,43 @@ from engine.mechanics import (
 )
 
 # -------------------------------------------------
-# Load custom CSS
+# App config
 # -------------------------------------------------
-def load_css(file_name):
-    css_path = ROOT / file_name
-    with open(css_path) as f:
-        st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+st.set_page_config(
+    page_title="Knee Biomechanics Assistant",
+    layout="centered"
+)
 
-load_css("style.css")
-
+# =================================================
+# HERO
+# =================================================
+st.markdown("""
+<div class="hero">
+<div class="hero-title">Knee Biomechanics Assistant</div>
+<div class="hero-sub">
+Mechanics-first reasoning • knee patterns with hip & ankle contributors
+</div>
+</div>
+""", unsafe_allow_html=True)
 
 # -------------------------------------------------
-# Helper: merge two biomechanical modules safely
+# Mode selection
 # -------------------------------------------------
+mode = st.radio("Mode:", ["Patient", "Clinician"], horizontal=True)
+clinician_mode = mode == "Clinician"
+
+if clinician_mode:
+    st.markdown("""
+    <div class="info-tile">
+    Clinician mode enabled — advanced probing active.
+    </div>
+    """, unsafe_allow_html=True)
+
+# -------------------------------------------------
+# Load & compose modules
+# -------------------------------------------------
+knee_module = load_json("modules/knee_mechanics.json")
+cross_joint = load_json("modules/knee_cross_joint_addendum.json")
 def merge_modules(base, addendum):
     base["questions"].extend(addendum.get("questions", []))
     base["mechanical_features"].update(
@@ -43,28 +77,6 @@ def merge_modules(base, addendum):
     )
     return base
 
-# -------------------------------------------------
-# App config
-# -------------------------------------------------
-st.set_page_config(
-    page_title="Knee Biomechanics Assistant",
-    layout="centered"
-)
-
-st.title("Knee Biomechanics Assistant")
-st.caption("Mechanics-first reasoning • knee patterns with hip & ankle contributors")
-
-mode = st.radio("Mode:", ["Patient", "Clinician"], horizontal=True)
-clinician_mode = mode == "Clinician"
-
-if clinician_mode:
-    st.info("Clinician mode enabled — advanced probing active.")
-
-# -------------------------------------------------
-# Load & compose modules
-# -------------------------------------------------
-knee_module = load_json("modules/knee_mechanics.json")
-cross_joint = load_json("modules/knee_cross_joint_addendum.json")
 module = merge_modules(knee_module, cross_joint)
 
 # -------------------------------------------------
@@ -83,7 +95,12 @@ for q in module["questions"]:
     if q.get("clinician_only", False) and not clinician_mode:
         continue
 
-    st.subheader(q["question"])
+    st.markdown(f"""
+    <div class="question-tile">
+        <div class="question-title">{q["question"]}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
     qid = q["id"]
     answers_log[qid] = []
 
@@ -109,22 +126,27 @@ primary_scores, contributor_scores = score_primary_and_contributors(
 primary, secondary = select_dominant(primary_scores, ratio=0.75, max_items=3)
 contrib, contrib_secondary = select_dominant(contributor_scores, ratio=0.70, max_items=3)
 
-
 # =================================================
-# 🔍 NEW SECTION — EXERCISE AS PROBES (ONLY ADDITION)
+# MOVEMENT CHECKS — EXERCISE PROBES
 # =================================================
+st.header("Movement Checks")
 
-st.header("Movement Checks (Exercise Probes)")
-st.caption(
-    "These movements help confirm or refine the mechanical findings. "
-    "Stop if pain is sharp, severe, or concerning."
-)
+st.markdown("""
+<p>
+These movements help confirm or refine the mechanical findings.
+Stop if pain is sharp, severe, or concerning.
+</p>
+""", unsafe_allow_html=True)
 
 probes = load_json("modules/exercise_probes.json")["exercise_probes"]
 
 for probe in probes:
-    st.subheader(probe["name"])
-    st.write(probe["instructions"])
+    st.markdown(f"""
+    <div class="question-tile">
+    <div class="question-title">{probe["name"]}</div>
+    <p>{probe["instructions"]}</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     response = st.radio(
         "What best describes your experience?",
@@ -133,7 +155,6 @@ for probe in probes:
     )
 
     add_feature_updates(patient_vec, probe["responses"][response])
-
 
 # -------------------------------------------------
 # Re-score AFTER probes
@@ -149,20 +170,29 @@ contrib, contrib_secondary = select_dominant(
     max_items=3
 )
 
-st.subheader("Refined Mechanical Interpretation")
-if contrib:
-    st.write(
-        f"After movement checks, **{contrib.name}** "
-        "remains the most likely contributing factor."
-    )
-else:
-    st.write(
-        "Movement checks reduced confidence in major hip or ankle contributors."
-    )
+# -------------------------------------------------
+# Refined interpretation
+# -------------------------------------------------
+st.header("Refined Mechanical Interpretation")
 
+if contrib:
+    st.markdown(f"""
+    <div class="result-tile">
+    <p>
+    After movement checks, <strong>{contrib.name}</strong>
+    remains the most likely contributing factor.
+    </p>
+    </div>
+    """, unsafe_allow_html=True)
+else:
+    st.markdown("""
+    <div class="result-tile">
+    Movement checks reduced confidence in major hip or ankle contributors.
+    </div>
+    """, unsafe_allow_html=True)
 
 # -------------------------------------------------
-# Final biomechanical summary (after probes)
+# Final biomechanical summary
 # -------------------------------------------------
 st.header("Final Biomechanical Summary")
 
@@ -172,41 +202,69 @@ if not primary:
         "consistent signal to identify a dominant knee loading pattern."
     )
 else:
-    st.subheader("Dominant knee mechanical pattern")
-    st.write(f"**{primary.name}**")
-    st.write(pattern_strength(primary_scores))
+    st.markdown(f"""
+    <div class="result-tile">
+    <div class="result-highlight">
+    Dominant knee mechanical pattern
+    </div>
+    <p><strong>{primary.name}</strong></p>
+    <p>{pattern_strength(primary_scores)}</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    st.subheader("Likely contributing mechanics")
     if contrib:
-        st.write(f"**{contrib.name}**")
+        st.markdown(f"""
+        <div class="result-tile">
+        <div class="result-highlight">
+        Likely contributing mechanics
+        </div>
+        <p><strong>{contrib.name}</strong></p>
+        </div>
+        """, unsafe_allow_html=True)
 
         cmap = module.get("contributor_mapping", {}).get(
             contrib.primary_feature, {}
         )
         if cmap:
-            st.markdown("**Why this matters**")
+            st.markdown("""
+            <div class="result-tile">
+            <strong>Why this matters</strong>
+            </div>
+            """, unsafe_allow_html=True)
+
             st.write(cmap.get("why_it_matters", ""))
 
-            st.markdown("**Likely contributors**")
+            st.markdown("""
+            <div class="result-tile">
+            <strong>Likely contributors</strong>
+            </div>
+            """, unsafe_allow_html=True)
+
             for c in cmap.get("likely_contributors", []):
                 st.write(f"• {c}")
 
         if contrib_secondary:
-            st.markdown("**Other possible contributors**")
+            st.markdown("""
+            <div class="result-tile">
+            <strong>Other possible contributors</strong>
+            </div>
+            """, unsafe_allow_html=True)
             for c in contrib_secondary:
                 st.write(f"• {c.name}")
     else:
-        st.write(
-            "Movement checks did not strongly support hip or ankle contribution. "
-            "The knee appears to be the primary driver of symptoms."
-        )
-
+        st.markdown("""
+        <div class="result-tile">
+        Movement checks did not strongly support hip or ankle contribution.
+        The knee appears to be the primary driver of symptoms.
+        </div>
+        """, unsafe_allow_html=True)
 
 # -------------------------------------------------
 # Footer
 # -------------------------------------------------
-st.info(
-    "This tool supports biomechanical reasoning and guided self-management. "
-    "It does not provide a medical diagnosis. Seek professional assessment "
-    "if symptoms are severe, progressive, or concerning."
-)
+st.markdown("""
+<div class="footer">
+This tool supports biomechanical reasoning and guided self-management.<br>
+It does not provide a medical diagnosis and does not replace professional assessment.
+</div>
+""", unsafe_allow_html=True)
