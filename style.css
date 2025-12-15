@@ -1,153 +1,99 @@
 /* ===========================================
-   GLOBAL RESET
+   GLOBAL BASE (PHYSIO SAFE)
 =========================================== */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
 
-html, body {
-    background: #FFF6F1 !important;
-    color: #2E2E2E !important;
+html, body, .stApp {
+    background-color: #F4F9FC !important;
+    color: #24323F !important;
     font-family: 'Segoe UI', system-ui, sans-serif;
 }
 
-/* Streamlit wrapper */
-.stApp {
-    background: #FFF6F1 !important;
+/* Force readable text everywhere */
+h1, h2, h3, h4, h5, h6, p, label, span {
+    color: #24323F !important;
 }
 
 /* ===========================================
-   HERO SECTION (SOLID, CALM)
+   HERO
 =========================================== */
 
 .hero {
     width: 100%;
-    height: 22vh;
-    min-height: 160px;
+    background: #E6F1F8;
     border-radius: 16px;
-    margin-bottom: 32px;
-    background: #FDE2D8;
-    border: 1px solid #E8DAD5;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.hero-content {
-    text-align: center;
-    padding: 20px;
+    padding: 30px 20px;
+    margin-bottom: 30px;
+    border: 1px solid #CFE3F0;
 }
 
 .hero-title {
-    font-size: 2.2rem;
+    font-size: 2.3rem;
     font-weight: 700;
-    color: #2E2E2E;
+    margin-bottom: 8px;
 }
 
 .hero-sub {
-    margin-top: 8px;
     font-size: 1.1rem;
-    color: #5F5F5F;
+    color: #4A647A !important;
 }
 
 /* ===========================================
-   SECTION BLOCKS
+   QUESTION & PROBE TILES (PASTEL BLUE)
 =========================================== */
 
-.section-block {
-    margin: 30px 0;
-    padding: 24px;
+.question-tile {
     background: #FFFFFF;
+    border: 1px solid #CFE3F0;
     border-radius: 14px;
-    border: 1px solid #E8DAD5;
-}
-
-.section-title {
-    font-size: 1.7rem;
-    margin-bottom: 12px;
-    color: #F4A6A0;
-}
-
-.section-text {
-    font-size: 1.05rem;
-    line-height: 1.6;
-    color: #4F4F4F;
-}
-
-/* ===========================================
-   TILE / CARD GRID
-=========================================== */
-
-.tile-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 22px;
-    margin-bottom: 40px;
-}
-
-.tile {
-    background: #FFFFFF;
     padding: 20px;
-    border-radius: 14px;
-    border: 1px solid #E8DAD5;
-    text-align: center;
-    font-size: 1.05rem;
-    color: #2E2E2E;
-    transition: transform 0.2s ease;
+    margin-bottom: 22px;
 }
 
-.tile:hover {
-    transform: translateY(-3px);
+.question-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 12px;
 }
 
 /* ===========================================
-   PRIMARY BUTTON (PASTEL PEACH)
+   RESULT / SOLUTION TILES
 =========================================== */
 
-button[kind="secondary"] {
-    background: #F4A6A0 !important;
-    color: #FFFFFF !important;
-    border-radius: 14px !important;
-    padding: 16px !important;
-    font-size: 1.15rem !important;
-    border: none !important;
-    width: 100%;
+.result-tile {
+    background: #EAF5FB;
+    border: 1px solid #BFDCEC;
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 20px;
 }
 
-button[kind="secondary"]:hover {
-    background: #EE948D !important;
+.result-highlight {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1F4E79 !important;
 }
 
 /* ===========================================
-   INFO / RESULT TILES
+   CLINICIAN INFO TILE
 =========================================== */
 
 .info-tile {
-    background: #FFF1EC;
-    border: 1px solid #E8DAD5;
+    background: #FFF3E8;
+    border: 1px solid #FFD6B8;
     border-radius: 14px;
-    padding: 20px;
-    margin-bottom: 18px;
-}
-
-.info-tile h3 {
-    margin-bottom: 8px;
-    color: #2E2E2E;
+    padding: 16px;
+    margin-bottom: 25px;
+    color: #5A3E2B !important;
 }
 
 /* ===========================================
-   SIDEBAR
+   STREAMLIT INPUT TWEAKS
 =========================================== */
 
-.stSidebar {
-    background-color: #FFF6F1 !important;
-    border-right: 1px solid #E8DAD5;
-}
-
-.stSidebar * {
-    color: #2E2E2E !important;
+.stRadio > div, .stMultiSelect {
+    background: #FFFFFF !important;
+    border-radius: 10px;
+    padding: 8px;
 }
 
 /* ===========================================
@@ -155,9 +101,9 @@ button[kind="secondary"]:hover {
 =========================================== */
 
 .footer {
-    margin-top: 40px;
-    padding: 20px;
     text-align: center;
+    margin-top: 40px;
     font-size: 0.9rem;
-    color: #6A6A6A;
+    color: #6C7A86 !important;
 }
+
