@@ -97,39 +97,6 @@ primary_scores, contributor_scores = score_primary_and_contributors(
 primary, secondary = select_dominant(primary_scores, ratio=0.75, max_items=3)
 contrib, contrib_secondary = select_dominant(contributor_scores, ratio=0.70, max_items=3)
 
-# -------------------------------------------------
-# Output summary
-# -------------------------------------------------
-st.header("Biomechanical Summary")
-
-if not primary:
-    st.info("Insufficient signal to identify a dominant knee pattern.")
-else:
-    st.subheader("Dominant knee mechanical pattern")
-    st.write(f"**{primary.name}**")
-    st.write(pattern_strength(primary_scores))
-
-    st.subheader("Likely contributing mechanics (upstream / downstream)")
-    if contrib:
-        st.write(f"**{contrib.name}**")
-
-        cmap = module.get("contributor_mapping", {}).get(
-            contrib.primary_feature, {}
-        )
-        if cmap:
-            st.markdown("**Why it matters**")
-            st.write(cmap.get("why_it_matters", ""))
-
-            st.markdown("**Likely contributors**")
-            for c in cmap.get("likely_contributors", []):
-                st.write(f"• {c}")
-
-        if contrib_secondary:
-            st.markdown("**Other possible contributors**")
-            for c in contrib_secondary:
-                st.write(f"• {c.name}")
-    else:
-        st.write("No strong hip or ankle contributors identified.")
 
 # =================================================
 # 🔍 NEW SECTION — EXERCISE AS PROBES (ONLY ADDITION)
@@ -180,6 +147,48 @@ else:
     st.write(
         "Movement checks reduced confidence in major hip or ankle contributors."
     )
+
+
+# -------------------------------------------------
+# Final biomechanical summary (after probes)
+# -------------------------------------------------
+st.header("Final Biomechanical Summary")
+
+if not primary:
+    st.info(
+        "Based on your responses and movement checks, there is not enough "
+        "consistent signal to identify a dominant knee loading pattern."
+    )
+else:
+    st.subheader("Dominant knee mechanical pattern")
+    st.write(f"**{primary.name}**")
+    st.write(pattern_strength(primary_scores))
+
+    st.subheader("Likely contributing mechanics")
+    if contrib:
+        st.write(f"**{contrib.name}**")
+
+        cmap = module.get("contributor_mapping", {}).get(
+            contrib.primary_feature, {}
+        )
+        if cmap:
+            st.markdown("**Why this matters**")
+            st.write(cmap.get("why_it_matters", ""))
+
+            st.markdown("**Likely contributors**")
+            for c in cmap.get("likely_contributors", []):
+                st.write(f"• {c}")
+
+        if contrib_secondary:
+            st.markdown("**Other possible contributors**")
+            for c in contrib_secondary:
+                st.write(f"• {c.name}")
+    else:
+        st.write(
+            "Movement checks did not strongly support hip or ankle contribution. "
+            "The knee appears to be the primary driver of symptoms."
+        )
+
 
 # -------------------------------------------------
 # Footer
