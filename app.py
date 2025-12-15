@@ -1,33 +1,25 @@
 import streamlit as st
-
-from utils.loaders import load_module
-from engine.inference import initialise_scores, apply_answer
-from engine.normalise import normalise
-from engine.explain import top_reasons
-from engine.reasoning import rank_conditions, determine_contributors, dominance_label
-from ui.components import section, disclaimer
+from utils.loaders import load_json
+from engine.mechanics import build_feature_vector, add_feature_updates, score_patterns, contributors, pattern_strength
 
 
 def collect_triggers(module, answers_log):
-    """Evaluate red flags from module.red_flags."""
-    triggered = []
+    hits = []
     for rf in module.get("red_flags", []):
         trig = rf.get("trigger", {})
         qid = trig.get("question_id")
         ans = trig.get("answer")
         if qid in answers_log and ans in answers_log[qid]:
-            triggered.append(rf)
-    return triggered
+            hits.append(rf)
+    return hits
 
 
 def collect_contradictions(module, answers_log):
-    """Evaluate contradiction rules from module.contradiction_rules."""
     issues = []
     for rule in module.get("contradiction_rules", []):
         cond = rule.get("if", {})
         qid = cond.get("question_id")
         ans = cond.get("answer")
-
         if qid in answers_log and ans in answers_log[qid]:
             for conflict in rule.get("conflicts_with", []):
                 cqid = conflict.get("question_id")
@@ -38,126 +30,94 @@ def collect_contradictions(module, answers_log):
     return list(dict.fromkeys(issues))
 
 
-st.set_page_config(page_title="Physio Diagnostic Assistant", layout="centered")
+st.set_page_config(page_title="Knee Mechanics Assistant", layout="centered")
+st.title("Knee Mechanics Assistant")
+st.caption("Mechanics-first reasoning • pattern-based • clinician-friendly")
 
-with open("assets/styles.css", "r", encoding="utf-8") as f:
-    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-
-st.title("Physio Diagnostic Assistant")
-st.caption("Clinical reasoning assistant • Explainable • Safety-aware • Bayesian-ready (internals)")
-
-mode = st.radio("Select mode:", ["Patient", "Clinician"], horizontal=True)
+mode = st.radio("Mode:", ["Patient", "Clinician"], horizontal=True)
 clinician_mode = mode == "Clinician"
 if clinician_mode:
-    st.info("Clinician mode enabled — advanced questions and deeper probing shown.")
+    st.info("Clinician mode enabled — additional probing shown.")
 
-body_part = st.selectbox("Where is the primary pain?", ["knee"])
-module = load_module(body_part)
+module = load_json("modules/knee_mechanics.json")
 
-scores, trace = initialise_scores(module["conditions"])
+feature_names = list(module["mechanical_features"].keys())
+patient_vec = build_feature_vector(feature_names)
 
-# Keep a log of selected answers for safety + contradiction logic
-# values are stored as list to support multi_choice
 answers_log = {}
 
-section("Questions")
-
+st.markdown("## Questions")
 for q in module["questions"]:
     if q.get("clinician_only", False) and not clinician_mode:
         continue
 
-    section(q["question"])
-
+    st.markdown(f"### {q['question']}")
     qid = q["id"]
     answers_log[qid] = []
 
     if q["type"] == "single_choice":
-        answer = st.radio("", list(q["answers"].keys()), key=qid)
-        answers_log[qid].append(answer)
-
-        weights = q["answers"].get(answer, {})
-        scores, trace = apply_answer(
-            scores=scores,
-            trace=trace,
-            question_id=qid,
-            question_text=q["question"],
-            answer_text=answer,
-            answer_weights=weights
-        )
+        ans = st.radio("", list(q["answers"].keys()), key=qid)
+        answers_log[qid].append(ans)
+        add_feature_updates(patient_vec, q["answers"].get(ans, {}))
 
     elif q["type"] == "multi_choice":
         selected = st.multiselect("", list(q["answers"].keys()), key=qid)
         answers_log[qid].extend(selected)
-
         for a in selected:
-            weights = q["answers"].get(a, {})
-            scores, trace = apply_answer(
-                scores=scores,
-                trace=trace,
-                question_id=qid,
-                question_text=q["question"],
-                answer_text=a,
-                answer_weights=weights
-            )
+            add_feature_updates(patient_vec, q["answers"].get(a, {}))
 
-# Safety / contradictions
-red_flag_hits = collect_triggers(module, answers_log)
-contradictions = collect_contradictions(module, answers_log)
+# Safety and consistency
+st.markdown("## Safety & Consistency")
+contr = collect_contradictions(module, answers_log)
+if contr:
+    st.warning("Some answers appear inconsistent:\n\n" + "\n".join([f"• {m}" for m in contr]))
 
-section("Safety & Consistency")
-
-if contradictions:
-    st.warning("Some answers appear inconsistent. Please double-check:\n\n" + "\n".join([f"• {m}" for m in contradictions]))
-
-if red_flag_hits:
-    urgent = [x for x in red_flag_hits if x.get("severity") == "urgent"]
-    priority = [x for x in red_flag_hits if x.get("severity") == "priority"]
-
+rf = collect_triggers(module, answers_log)
+if rf:
+    urgent = [x for x in rf if x.get("severity") == "urgent"]
+    priority = [x for x in rf if x.get("severity") == "priority"]
     if urgent:
-        st.error("⚠️ Potential red flags detected (urgent):\n\n" + "\n".join([f"• {x.get('message','')}" for x in urgent]))
+        st.error("⚠️ Red flags (urgent):\n\n" + "\n".join([f"• {x.get('message','')}" for x in urgent]))
     if priority:
-        st.warning("⚠️ Red flag considerations (priority):\n\n" + "\n".join([f"• {x.get('message','')}" for x in priority]))
+        st.warning("⚠️ Red flags (priority):\n\n" + "\n".join([f"• {x.get('message','')}" for x in priority]))
 
-# Reasoning-based results (no probabilities shown)
-norm = normalise(scores)
-ranked = rank_conditions(norm)
-primary, secondary = determine_contributors(ranked, secondary_ratio=0.70, max_secondary=3)
+# Score patterns
+scores = score_patterns(module, patient_vec)
+primary, secondary = contributors(scores, ratio=0.75, max_secondary=3)
 
-section("Clinical Reasoning Summary")
+st.markdown("## Mechanics Summary")
 
-if primary[0] == "":
-    st.info("Not enough information to generate a shortlist.")
+if not primary:
+    st.info("Not enough information to identify a dominant mechanical pattern.")
 else:
-    st.subheader("Most likely primary contributor")
-    st.write(f"**{primary[0]}**")
+    st.subheader("Most likely dominant mechanical pattern")
+    st.write(f"**{primary.name}**")
+    st.write(pattern_strength(scores))
 
-    # Pattern strength label (case-level)
-    st.write(dominance_label(ranked))
+    # Map to tissues/labels
+    primary_feat = next((p for p in module["patterns"] if p["id"] == primary.pattern_id), None)
+    if primary_feat:
+        feat_key = primary_feat.get("primary_feature")
+        mapping = module["tissue_mapping"].get(feat_key, {})
+        st.markdown("**Likely structures involved**")
+        for s in mapping.get("likely_structures", []):
+            st.write(f"• {s}")
+        st.markdown("**Common clinical labels**")
+        for lbl in mapping.get("common_labels", []):
+            st.write(f"• {lbl}")
 
-    # Secondary contributors
     if secondary:
-        st.subheader("Other possible contributors")
-        for cond, _ in secondary:
-            st.write(f"• {cond}")
-    else:
-        st.subheader("Other possible contributors")
-        st.write("• None strongly suggested based on this pattern (differential appears narrower).")
+        st.subheader("Other plausible contributing patterns")
+        for s in secondary:
+            st.write(f"• {s.name}")
 
-    # Explanations
-    st.subheader("Key features supporting this pattern")
-    reasons = top_reasons(trace, primary[0], max_items=6)
-    if reasons:
-        for r in reasons:
-            st.write(f"• {r}")
-    else:
-        st.write("• Pattern derived from combined symptom responses (no single dominant feature).")
+    # Differentiators (clinician prompt)
+    if clinician_mode and primary_feat:
+        st.subheader("What would help differentiate further")
+        for d in primary_feat.get("differentiators", []):
+            st.write(f"• {d}")
 
-    if clinician_mode and secondary:
-        st.subheader("What would help differentiate further (clinician prompt)")
-        st.write("• Consider targeted examination tests and symptom reproduction patterns.")
-        st.write("• Re-check mechanical symptoms (true locking vs catching) and instability quality.")
-        st.write("• Consider imaging if red flags present or symptoms persist/worsen.")
-
-disclaimer(mode)
-
-
+st.info(
+    "This tool supports reasoning and self-management guidance. It does not provide a medical diagnosis. "
+    "Seek professional assessment if symptoms are severe, worsening, or red flags are present."
+)
