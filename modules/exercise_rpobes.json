@@ -1,0 +1,58 @@
+{
+  "exercise_probes": [
+    {
+      "id": "single_leg_squat",
+      "name": "Single-Leg Squat (to comfortable depth)",
+      "targets": ["hip_frontal_plane_control", "global_fatigue_control"],
+      "instructions": "Stand on one leg and slowly squat down as far as comfortable, then return to standing. Repeat 5–8 times.",
+      "responses": {
+        "Feels controlled with minimal pain": {
+          "hip_frontal_plane_control": -0.4
+        },
+        "Pain increases but control feels okay": {
+          "anterior_knee_compression": 0.3
+        },
+        "Feels unstable or knee collapses inward": {
+          "hip_frontal_plane_control": 0.6,
+          "global_fatigue_control": 0.4
+        }
+      }
+    },
+
+    {
+      "id": "step_down",
+      "name": "Slow Step-Down",
+      "targets": ["ankle_dorsiflexion_constraint", "anterior_knee_compression"],
+      "instructions": "Stand on a step and slowly lower the opposite heel to the ground, keeping control. Repeat 5 times.",
+      "responses": {
+        "Smooth and controlled": {
+          "ankle_dorsiflexion_constraint": -0.4
+        },
+        "Knee pain increases during lowering": {
+          "anterior_knee_compression": 0.4
+        },
+        "Feels restricted at the ankle or heel lifts": {
+          "ankle_dorsiflexion_constraint": 0.6
+        }
+      }
+    },
+
+    {
+      "id": "wall_sit",
+      "name": "Wall Sit (30–45 seconds)",
+      "targets": ["tensile_load_extensor", "load_endurance_deficit"],
+      "instructions": "Sit against a wall with knees bent, hold for up to 45 seconds if comfortable.",
+      "responses": {
+        "Comfortable throughout": {
+          "tensile_load_extensor": -0.3
+        },
+        "Pain builds gradually": {
+          "load_endurance_deficit": 0.6
+        },
+        "Sharp pain early": {
+          "tensile_load_extensor": 0.6
+        }
+      }
+    }
+  ]
+}
