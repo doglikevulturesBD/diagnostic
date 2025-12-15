@@ -42,7 +42,7 @@ st.set_page_config(
 # =================================================
 st.markdown("""
 <div class="hero">
-<div class="hero-title">Knee Biomechanics Assistant</div>
+<div class="hero-title">Elza's Fantastical Physio App</div>
 <div class="hero-sub">
 Mechanics-first reasoning • knee patterns with hip & ankle contributors
 </div>
